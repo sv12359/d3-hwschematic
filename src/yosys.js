@@ -14,7 +14,7 @@ import {
     convertPortOrderingFromYosysToElk
 } from "./yosysUtills.js";
 
-import {aggregateConcants} from "./yosysConcatAggregation.js";
+import {aggregateConcantsAndSplits} from "./yosysConcatAndSplitAggregation.js";
 
 class LNodeMaker {
     constructor(name, yosysModule, idCounter, yosysModules, hierarchyLevel, nodePortNames) {
@@ -44,7 +44,7 @@ class LNodeMaker {
             this.fillEdges(node);
 
             if (node.children !== undefined && node.children.length > 0) {
-                aggregateConcants(node);
+                aggregateConcantsAndSplits(node);
             }
 
         }
