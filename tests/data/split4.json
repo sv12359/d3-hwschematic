@@ -74,10 +74,6 @@
             [
               "5",
               "6"
-            ],
-            [
-              "8",
-              "9"
             ]
           ],
           "hwMeta": {
@@ -106,7 +102,7 @@
           "id": "23",
           "sources": [
             [
-              "8",
+              "5",
               "10"
             ]
           ],
@@ -137,62 +133,36 @@
             {
               "id": "7",
               "hwMeta": {
-                "name": ""
+                "name": "[4:0]"
               },
               "direction": "OUTPUT",
               "properties": {
                 "side": "EAST",
                 "index": 0
+              },
+              "children": []
+            },
+            {
+              "id": "10",
+              "hwMeta": {
+                "name": "[7:5]"
+              },
+              "direction": "OUTPUT",
+              "properties": {
+                "side": "EAST",
+                "index": 1
               },
               "children": []
             },
             {
               "id": "6",
               "hwMeta": {
-                "name": "[4:0]"
-              },
-              "direction": "INPUT",
-              "properties": {
-                "side": "WEST",
-                "index": 1
-              },
-              "children": []
-            }
-          ]
-        },
-        {
-          "id": "8",
-          "hwMeta": {
-            "name": "SLICE",
-            "cls": "Operator",
-            "maxId": 8
-          },
-          "properties": {
-            "org.eclipse.elk.portConstraints": "FIXED_ORDER",
-            "org.eclipse.elk.layered.mergeEdges": 1
-          },
-          "ports": [
-            {
-              "id": "10",
-              "hwMeta": {
                 "name": ""
               },
-              "direction": "OUTPUT",
-              "properties": {
-                "side": "EAST",
-                "index": 0
-              },
-              "children": []
-            },
-            {
-              "id": "9",
-              "hwMeta": {
-                "name": "[7:5]"
-              },
               "direction": "INPUT",
               "properties": {
                 "side": "WEST",
-                "index": 1
+                "index": 2
               },
               "children": []
             }

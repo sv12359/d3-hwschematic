@@ -103,7 +103,7 @@
             {
               "id": "6",
               "hwMeta": {
-                "name": ""
+                "name": "[3]"
               },
               "direction": "OUTPUT",
               "properties": {
@@ -115,7 +115,7 @@
             {
               "id": "5",
               "hwMeta": {
-                "name": "[3]"
+                "name": ""
               },
               "direction": "INPUT",
               "properties": {

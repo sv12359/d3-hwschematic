@@ -111,7 +111,7 @@ export function hideChildrenAndNodes(node, yosysModule) {
 }
 
 
-function updatePortIndices(ports) {
+export function updatePortIndices(ports) {
     let index = 0;
     for (let port of ports) {
         port.properties.index = index;

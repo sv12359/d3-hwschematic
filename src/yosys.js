@@ -96,16 +96,19 @@ class LNodeMaker {
         for (let [portName, portObj] of Object.entries(ports)) {
             let originalPortName = portName;
             if (isSplit || isConcat) {
-                if (portName === "Y") {
-                    portName = "";
-                }
+
                 if (isSplit) {
                     if (portName === "A") {
+                        portName = "";
+                    } else if (portName === "Y") {
                         portName = getPortNameSplice(cellObj.parameters.OFFSET, cellObj.parameters.Y_WIDTH);
                     }
                 } else if (isConcat) {
                     let par = cellObj.parameters;
-                    if (portName === "A") {
+
+                    if (portName === "Y") {
+                        portName = "";
+                    } else if (portName === "A") {
                         portName = getPortNameSplice(0, par.A_WIDTH);
                     } else if (portName === "B") {
                         portName = getPortNameSplice(par.A_WIDTH, par.B_WIDTH);

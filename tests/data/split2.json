@@ -86,14 +86,6 @@
             [
               "6",
               "7"
-            ],
-            [
-              "9",
-              "10"
-            ],
-            [
-              "12",
-              "13"
             ]
           ],
           "hwMeta": {
@@ -122,7 +114,7 @@
           "id": "27",
           "sources": [
             [
-              "9",
+              "6",
               "11"
             ]
           ],
@@ -140,7 +132,7 @@
           "id": "29",
           "sources": [
             [
-              "12",
+              "6",
               "14"
             ]
           ],
@@ -171,100 +163,48 @@
             {
               "id": "8",
               "hwMeta": {
-                "name": ""
+                "name": "[4:0]"
               },
               "direction": "OUTPUT",
               "properties": {
                 "side": "EAST",
                 "index": 0
+              },
+              "children": []
+            },
+            {
+              "id": "11",
+              "hwMeta": {
+                "name": "[6:4]"
+              },
+              "direction": "OUTPUT",
+              "properties": {
+                "side": "EAST",
+                "index": 1
+              },
+              "children": []
+            },
+            {
+              "id": "14",
+              "hwMeta": {
+                "name": "[8:6]"
+              },
+              "direction": "OUTPUT",
+              "properties": {
+                "side": "EAST",
+                "index": 2
               },
               "children": []
             },
             {
               "id": "7",
               "hwMeta": {
-                "name": "[4:0]"
-              },
-              "direction": "INPUT",
-              "properties": {
-                "side": "WEST",
-                "index": 1
-              },
-              "children": []
-            }
-          ]
-        },
-        {
-          "id": "9",
-          "hwMeta": {
-            "name": "SLICE",
-            "cls": "Operator",
-            "maxId": 9
-          },
-          "properties": {
-            "org.eclipse.elk.portConstraints": "FIXED_ORDER",
-            "org.eclipse.elk.layered.mergeEdges": 1
-          },
-          "ports": [
-            {
-              "id": "11",
-              "hwMeta": {
                 "name": ""
               },
-              "direction": "OUTPUT",
-              "properties": {
-                "side": "EAST",
-                "index": 0
-              },
-              "children": []
-            },
-            {
-              "id": "10",
-              "hwMeta": {
-                "name": "[6:4]"
-              },
               "direction": "INPUT",
               "properties": {
                 "side": "WEST",
-                "index": 1
-              },
-              "children": []
-            }
-          ]
-        },
-        {
-          "id": "12",
-          "hwMeta": {
-            "name": "SLICE",
-            "cls": "Operator",
-            "maxId": 12
-          },
-          "properties": {
-            "org.eclipse.elk.portConstraints": "FIXED_ORDER",
-            "org.eclipse.elk.layered.mergeEdges": 1
-          },
-          "ports": [
-            {
-              "id": "14",
-              "hwMeta": {
-                "name": ""
-              },
-              "direction": "OUTPUT",
-              "properties": {
-                "side": "EAST",
-                "index": 0
-              },
-              "children": []
-            },
-            {
-              "id": "13",
-              "hwMeta": {
-                "name": "[8:6]"
-              },
-              "direction": "INPUT",
-              "properties": {
-                "side": "WEST",
-                "index": 1
+                "index": 3
               },
               "children": []
             }

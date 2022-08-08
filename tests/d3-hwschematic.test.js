@@ -11,6 +11,7 @@ import * as path from 'path';
 const EXAMPLES = __dirname + "/../examples/schemes"
 const YOSYS_EXAMPLES = __dirname + "/../examples/schemes_yosys"
 
+
 function initSvg() {
 	var svg = d3.select("body")
 		.append("svg");
@@ -109,7 +110,7 @@ describe("Testing yosys", () => {
 		"subModuleBlackbox2", "partialConstDriver0", "partialConstDriver1", "partialConstDriver2",
 		"partialConstDriver3", "partialConstDriver4", "partialConstDriver5",
 		"partialConstDriver6", "wireModule", "split0", "split1", "split2",
-		"split3", "split4", "split5", "constPortDriver", "dff_sync_reset",
+		"split3", "split4", "split5", "split6", "split7", "constPortDriver", "dff_sync_reset",
 		"fifo", "latchinf", "concat0", "concat1", "concat2", "fulladder_4bit"];
 	for (const testFile of testFiles) {
 		it("Testing file: " + testFile, () => {

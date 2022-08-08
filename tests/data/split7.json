@@ -3,7 +3,7 @@
   "hwMeta": {
     "name": "root",
     "cls": "",
-    "maxId": 24
+    "maxId": 21
   },
   "properties": {
     "org.eclipse.elk.portConstraints": "FIXED_ORDER",
@@ -15,9 +15,9 @@
     {
       "id": "1",
       "hwMeta": {
-        "name": "split5",
+        "name": "split7",
         "cls": "",
-        "maxId": 24
+        "maxId": 21
       },
       "properties": {
         "org.eclipse.elk.portConstraints": "FIXED_ORDER",
@@ -59,11 +59,35 @@
             "index": 2
           },
           "children": []
+        },
+        {
+          "id": "5",
+          "hwMeta": {
+            "name": "out2"
+          },
+          "direction": "OUTPUT",
+          "properties": {
+            "side": "EAST",
+            "index": 3
+          },
+          "children": []
+        },
+        {
+          "id": "6",
+          "hwMeta": {
+            "name": "out3"
+          },
+          "direction": "OUTPUT",
+          "properties": {
+            "side": "EAST",
+            "index": 4
+          },
+          "children": []
         }
       ],
       "edges": [
         {
-          "id": "11",
+          "id": "16",
           "sources": [
             [
               "1",
@@ -72,8 +96,12 @@
           ],
           "targets": [
             [
-              "5",
+              "1",
               "6"
+            ],
+            [
+              "7",
+              "8"
             ]
           ],
           "hwMeta": {
@@ -84,8 +112,8 @@
           "id": "19",
           "sources": [
             [
-              "5",
-              "7"
+              "7",
+              "9"
             ]
           ],
           "targets": [
@@ -99,11 +127,11 @@
           }
         },
         {
-          "id": "23",
+          "id": "20",
           "sources": [
             [
-              "5",
-              "10"
+              "7",
+              "12"
             ]
           ],
           "targets": [
@@ -115,15 +143,33 @@
           "hwMeta": {
             "name": "out1"
           }
+        },
+        {
+          "id": "21",
+          "sources": [
+            [
+              "7",
+              "15"
+            ]
+          ],
+          "targets": [
+            [
+              "1",
+              "5"
+            ]
+          ],
+          "hwMeta": {
+            "name": "out2"
+          }
         }
       ],
       "children": [
         {
-          "id": "5",
+          "id": "7",
           "hwMeta": {
             "name": "SLICE",
             "cls": "Operator",
-            "maxId": 5
+            "maxId": 7
           },
           "properties": {
             "org.eclipse.elk.portConstraints": "FIXED_ORDER",
@@ -131,9 +177,9 @@
           },
           "ports": [
             {
-              "id": "7",
+              "id": "9",
               "hwMeta": {
-                "name": "[4:0]"
+                "name": "[0]"
               },
               "direction": "OUTPUT",
               "properties": {
@@ -143,9 +189,9 @@
               "children": []
             },
             {
-              "id": "10",
+              "id": "12",
               "hwMeta": {
-                "name": "[2:0]"
+                "name": "[1]"
               },
               "direction": "OUTPUT",
               "properties": {
@@ -155,14 +201,26 @@
               "children": []
             },
             {
-              "id": "6",
+              "id": "15",
+              "hwMeta": {
+                "name": "[2]"
+              },
+              "direction": "OUTPUT",
+              "properties": {
+                "side": "EAST",
+                "index": 2
+              },
+              "children": []
+            },
+            {
+              "id": "8",
               "hwMeta": {
                 "name": ""
               },
               "direction": "INPUT",
               "properties": {
                 "side": "WEST",
-                "index": 2
+                "index": 3
               },
               "children": []
             }

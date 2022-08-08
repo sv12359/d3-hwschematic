@@ -1,3 +1,5 @@
+import {updatePortIndices} from "./yosysUtills.js"
+
 function getNodePorts(node, dict){
     for (let port of node.ports) {
         dict[port.id] = port;
@@ -143,10 +145,70 @@ function fillConcats(children) {
 
 }
 
+function aggregateTwoSplits(innitialNode, oldNode, portIdToEdgeDict) {
+    let oldNodePort = oldNode.ports[1]
+    innitialNode.ports.push(oldNodePort);
+    let edgeOnSplitOutput = portIdToEdgeDict[oldNodePort.id];
+    edgeOnSplitOutput.sources[0][0] = innitialNode.id;
+    oldNode.ports = [];
+}
+
+
+
+function filterTargets(edge, nodeIdToNodeDict, innitialNodeId) {
+    let targets = [];
+    for (let [targetNodeId, targetPortId] of edge.targets) {
+        let targetNode = nodeIdToNodeDict[targetNodeId];
+        if (targetNode.id === innitialNodeId || targetNode.hwMeta.cls !== "Operator" || targetNode.hwMeta.name !== "SLICE") {
+            targets.push([targetNodeId, targetPortId]);
+        }
+    }
+    edge.targets = targets;
+
+}
+function aggregateEdgeTargets(parent, edge, targets, nodeIdToNodeDict, portIdToEdgeDict) {
+    let innitialNode = undefined;
+    let nodesToDelete = new Set();
+    for (let [nodeId, _] of targets) {
+        let node = nodeIdToNodeDict[nodeId]
+        if (node.hwMeta.cls === "Operator" && node.hwMeta.name === "SLICE") {
+            if (innitialNode === undefined) {
+                innitialNode = node;
+            }
+            else {
+                aggregateTwoSplits(innitialNode, node, portIdToEdgeDict);
+                nodesToDelete.add(node.id);
+            }
+        }
+
+    }
+    if (innitialNode !== undefined) {
+        updatePortIndices(innitialNode.ports);
+        filterTargets(edge, nodeIdToNodeDict, innitialNode.id);
+
+    }
+
+
+    parent.children = parent.children.filter((c) => {
+        return !nodesToDelete.has(c.id);
+    });
+}
+
+function aggregateSplits(node, nodeIdToNodeDict, portIdToEdgeDict) {
+    for (let edge of node.edges) {
+        if (edge === undefined) {
+            throw new Error("Edge is undefined");
+        }
+        let targets = edge.targets;
+        aggregateEdgeTargets(node, edge, targets, nodeIdToNodeDict, portIdToEdgeDict);
+
+    }
+}
 export function aggregateConcantsAndSplits(node) {
     let concats = fillConcats(node.children);
     let portIdToEdgeDict = getPortToEdgeDict(node.edges);
     let portIdToPortDict = getPortIdToPortDict(node);
     let nodeIdToNodeDict = getNodeIdToNodeDict(node);
     aggregateConcats(node, concats, portIdToEdgeDict, portIdToPortDict, nodeIdToNodeDict);
+    aggregateSplits(node, nodeIdToNodeDict, portIdToEdgeDict);
 }
