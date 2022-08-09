@@ -2,16 +2,16 @@
 
 # Script expects one top file and verilog files.
 # It creates json from the files using yosys.
-help_message="Usage: $0 -t TOP FILE...
-TOP is top component in verilog to generate json for.
-FILE is a verilog input source file. Multiple file input is supported.
-
+help_message="Usage: $0 -t TOP FILE...\n\
+TOP is top component in verilog to generate json for.\n\
+FILE is a verilog input source file. Multiple file input is supported.\n\
+\n\
 The script generates json from verilog files using yosys."
 
 while getopts "t:h" arg; do
   case $arg in
     h)
-      echo "use: $0 -t top verilog_files.v"
+      echo -e "$help_message"
       exit 0;
       ;;
     t)
