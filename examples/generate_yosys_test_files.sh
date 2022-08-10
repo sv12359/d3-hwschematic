@@ -17,4 +17,4 @@ for filename in *; do
 
 done;
 cd ..
-echo -e "\n\n${GREEN}[Success]${NC} all veriog files were translated to json"
+echo -e "\n\n${GREEN}[Success]${NC} all verilog files were translated to json"
