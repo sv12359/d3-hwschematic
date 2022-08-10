@@ -111,7 +111,27 @@ export function hideChildrenAndNodes(node, yosysModule) {
 }
 
 
-export function updatePortIndices(ports) {
+export function updatePortIndices(ports, index) {
+    for (let port of ports) {
+        let side = port.properties.side;
+        if (side === "SOUTH" || side === "WEST") {
+            index = updatePortIndices(port.children, index);
+            port.properties.index = index;
+            ++index;
+        } else if (side === "NORTH" || side === "EAST") {
+            port.properties.index = index;
+            ++index;
+            index = updatePortIndices(port.children, index);
+        } else {
+            throw new Error("Invalid side" + side)
+        }
+
+    }
+
+    return index;
+}
+
+export function updatePortIndicesNoHierarchy(ports) {
     let index = 0;
     for (let port of ports) {
         port.properties.index = index;
@@ -146,8 +166,7 @@ function dividePorts(ports) {
 export function convertPortOrderingFromYosysToElk(node) {
     let [north, east, south, west] = dividePorts(node.ports);
     node.ports = north.concat(east, south.reverse(), west.reverse());
-    updatePortIndices(node.ports);
-
+    updatePortIndices(node.ports, 0);
 }
 
 export function getTopModuleName(yosysJson) {

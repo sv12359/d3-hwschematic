@@ -41,10 +41,10 @@ function getPortToEdgeDict(edges) {
     return portToEdgeDict;
 }
 
-function getChildSourcePorts(ports) {
+function getChildInputPorts(ports) {
     let sourcePorts = [];
     for(let port of ports) {
-        if (port !== undefined && port.direction === "INPUT") {
+        if (port.direction === "INPUT") {
             sourcePorts.push(port);
         }
     }
@@ -64,24 +64,36 @@ function getEdgeTargetsIndex(targets, portId) {
     throw new Error("PortId was not found");
 
 }
-function aggregateTwoConcats(childSourcePorts, targetNode, targetPort, portIdToEdgeDict) {
-    let i = 0;
+/**
+ * merges ports from left node to right
+ * :param targetPort: input port of right node, which will be replaced by left input concat ports
+ * :attention: properties.index is not an index of the port in port list
+ * :attention: port.properties.index must be updated later
+ */
+function aggregateTwoConcats(leftConcatInputPorts, rightConcatNode, targetPort, portIdToEdgeDict) {
+
     if (targetPort.properties.index !== 0) {
-        throw new Error("Port index is not zero, need to regenerate indices in port labels");
+        //throw new Error("Port index is not zero, need to regenerate indices in port labels");
     }
-    for (let oldTargetPort of childSourcePorts) {
+
+    let newTargetPortIndex = rightConcatNode.ports.indexOf(targetPort);
+    if (newTargetPortIndex === undefined) {
+        throw new Error("targetPort itself is missing in rightConcatNode")
+    }
+    let i = 0;
+    for (let oldTargetPort of leftConcatInputPorts) {
         let oldTargetPortId = oldTargetPort.id;
         let edge = portIdToEdgeDict[oldTargetPortId];
         let edgeTargetsIndex = getEdgeTargetsIndex(edge.targets, oldTargetPortId);
-        edge.targets[edgeTargetsIndex][0] = targetNode.id;
-        let newTargetPortIndex = targetPort.properties.index + i;
+        edge.targets[edgeTargetsIndex][0] = rightConcatNode.id;
+
         if (i === 0) {
-            targetNode.ports[newTargetPortIndex] = oldTargetPort;
+            // replace first port which should be first input port on target concatenation
+            rightConcatNode.ports[newTargetPortIndex] = oldTargetPort;
+        } else {
+            //insert another input after current port
+            rightConcatNode.ports.splice(newTargetPortIndex + i, 0, oldTargetPort)
         }
-        else {
-            targetNode.ports.splice(newTargetPortIndex, 0, oldTargetPort)
-        }
-        oldTargetPort.properties.index = newTargetPortIndex;
         ++i;
     }
 
@@ -103,8 +115,12 @@ function aggregateConcats(node, childrenConcats, portIdToEdgeDict, portIdToPortD
     let edgesToDelete = new Set();
     let childrenToDelete = new Set();
 
-    for (let child of childrenConcats) {
-        let childTargetPortId = getChildTargetPortId(child);
+    for (let leftConcatNode of childrenConcats) {
+        if (childrenToDelete.has(leftConcatNode.id)) {
+            continue;
+        }
+
+        let childTargetPortId = getChildTargetPortId(leftConcatNode);
         let edge = portIdToEdgeDict[childTargetPortId];
         if (edge === undefined) {
             continue;
@@ -112,17 +128,20 @@ function aggregateConcats(node, childrenConcats, portIdToEdgeDict, portIdToPortD
         let targets = edge.targets;
 
         if (targets !== undefined && targets.length === 1) {
+            //we found out that output only leads to a single node from this concatenation
             let [nodeId, portId] = targets[0];
-            let targetNode = nodeIdToNodeDict[nodeId];
-            let targetPort = portIdToPortDict[portId];
-            let childSourcePorts = getChildSourcePorts(child.ports);
-            if (targetNode === undefined) {
+            let rightConcatNode = nodeIdToNodeDict[nodeId];
+            if (rightConcatNode === undefined) {
                 throw new Error("Target node of target port is undefined");
             }
-            if (targetNode.hwMeta.cls === "Operator" && targetNode.hwMeta.name === "CONCAT") {
-                aggregateTwoConcats(childSourcePorts, targetNode, targetPort, portIdToEdgeDict)
+            if (rightConcatNode.hwMeta.cls === "Operator" && rightConcatNode.hwMeta.name === "CONCAT") {
+                //now we know that we should merge these 2 concatenations into 1
+                let targetPort = portIdToPortDict[portId];
+                //let targetPort = getTargetPort(leftConcatNode.ports);
+                let leftConcatInputPorts = getChildInputPorts(leftConcatNode.ports);
+                aggregateTwoConcats(leftConcatInputPorts, rightConcatNode, targetPort, portIdToEdgeDict)
                 edgesToDelete.add(edge.id);
-                childrenToDelete.add(child.id);
+                childrenToDelete.add(leftConcatNode.id);
             }
         }
     }
@@ -132,6 +151,12 @@ function aggregateConcats(node, childrenConcats, portIdToEdgeDict, portIdToPortD
     node.edges = node.edges.filter((e) => {
         return !edgesToDelete.has(e.id);
     });
+    for (let rightConcatNode of childrenConcats) {
+        if (!childrenToDelete.has(rightConcatNode.id)) {
+            updatePortIndices(rightConcatNode.ports, 0);
+        }
+    }
+
 }
 
 function fillConcats(children) {
@@ -146,7 +171,7 @@ function fillConcats(children) {
 }
 
 function aggregateTwoSplits(innitialNode, oldNode, portIdToEdgeDict) {
-    let oldNodePort = oldNode.ports[1]
+    let oldNodePort = oldNode.ports[1];
     innitialNode.ports.push(oldNodePort);
     let edgeOnSplitOutput = portIdToEdgeDict[oldNodePort.id];
     edgeOnSplitOutput.sources[0][0] = innitialNode.id;
@@ -183,7 +208,7 @@ function aggregateEdgeTargets(parent, edge, targets, nodeIdToNodeDict, portIdToE
 
     }
     if (innitialNode !== undefined) {
-        updatePortIndices(innitialNode.ports);
+        updatePortIndices(innitialNode.ports, 0);
         filterTargets(edge, nodeIdToNodeDict, innitialNode.id);
 
     }

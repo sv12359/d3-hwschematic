@@ -3,7 +3,7 @@
   "hwMeta": {
     "name": "root",
     "cls": "",
-    "maxId": 19
+    "maxId": 20
   },
   "properties": {
     "org.eclipse.elk.portConstraints": "FIXED_ORDER",
@@ -25,16 +25,41 @@
       },
       "ports": [
         {
-          "id": "2",
+          "id": "20",
           "hwMeta": {
             "name": "a"
           },
           "direction": "INPUT",
           "properties": {
             "side": "WEST",
-            "index": 0
+            "index": 2
           },
-          "children": []
+          "children": [
+            {
+              "id": "2",
+              "hwMeta": {
+                "name": "a"
+              },
+              "direction": "INPUT",
+              "properties": {
+                "side": "WEST",
+                "index": 0
+              },
+              "children": []
+            },
+            {
+              "id": "4",
+              "hwMeta": {
+                "name": "a_gt_b"
+              },
+              "direction": "OUTPUT",
+              "properties": {
+                "side": "WEST",
+                "index": 1
+              },
+              "children": []
+            }
+          ]
         },
         {
           "id": "3",
@@ -44,19 +69,7 @@
           "direction": "INPUT",
           "properties": {
             "side": "WEST",
-            "index": 1
-          },
-          "children": []
-        },
-        {
-          "id": "4",
-          "hwMeta": {
-            "name": "a_gt_b"
-          },
-          "direction": "OUTPUT",
-          "properties": {
-            "side": "EAST",
-            "index": 2
+            "index": 3
           },
           "children": []
         }
@@ -131,13 +144,13 @@
           },
           "ports": [
             {
-              "id": "8",
+              "id": "6",
               "hwMeta": {
-                "name": "Y"
+                "name": "A"
               },
-              "direction": "OUTPUT",
+              "direction": "INPUT",
               "properties": {
-                "side": "EAST",
+                "side": "WEST",
                 "index": 0
               },
               "children": []
@@ -155,13 +168,13 @@
               "children": []
             },
             {
-              "id": "6",
+              "id": "8",
               "hwMeta": {
-                "name": "A"
+                "name": "Y"
               },
-              "direction": "INPUT",
+              "direction": "OUTPUT",
               "properties": {
-                "side": "WEST",
+                "side": "EAST",
                 "index": 2
               },
               "children": []

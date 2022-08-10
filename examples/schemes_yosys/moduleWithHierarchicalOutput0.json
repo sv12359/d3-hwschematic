@@ -1,0 +1,114 @@
+{
+  "creator": "Yosys 0.9 (git sha1 1979e0b)",
+  "modules": {
+    "moduleWithHierarchicalOutput0": {
+      "attributes": {
+        "top": 1,
+        "src": "moduleWithHierarchicalOutput0.v:5"
+      },
+      "ports": {
+        "out_0": {
+          "direction": "output",
+          "bits": [ 2 ]
+        },
+        "out_1": {
+          "direction": "output",
+          "bits": [ 3 ]
+        },
+        "out_2": {
+          "direction": "output",
+          "bits": [ 4 ]
+        }
+      },
+      "cells": {
+        "b": {
+          "hide_name": 0,
+          "type": "subModule0",
+          "parameters": {
+          },
+          "attributes": {
+            "module_not_derived": 1,
+            "src": "moduleWithHierarchicalOutput0.v:6"
+          },
+          "port_directions": {
+            "out_0": "output",
+            "out_1": "output",
+            "out_2": "output"
+          },
+          "connections": {
+            "out_0": [ 2 ],
+            "out_1": [ 3 ],
+            "out_2": [ 4 ]
+          }
+        }
+      },
+      "netnames": {
+        "out_0": {
+          "hide_name": 0,
+          "bits": [ 2 ],
+          "attributes": {
+            "src": "moduleWithHierarchicalOutput0.v:5"
+          }
+        },
+        "out_1": {
+          "hide_name": 0,
+          "bits": [ 3 ],
+          "attributes": {
+            "src": "moduleWithHierarchicalOutput0.v:5"
+          }
+        },
+        "out_2": {
+          "hide_name": 0,
+          "bits": [ 4 ],
+          "attributes": {
+            "src": "moduleWithHierarchicalOutput0.v:5"
+          }
+        }
+      }
+    },
+    "subModule0": {
+      "attributes": {
+        "src": "moduleWithHierarchicalOutput0.v:1"
+      },
+      "ports": {
+        "out_0": {
+          "direction": "output",
+          "bits": [ "0" ]
+        },
+        "out_1": {
+          "direction": "output",
+          "bits": [ "0" ]
+        },
+        "out_2": {
+          "direction": "output",
+          "bits": [ "0" ]
+        }
+      },
+      "cells": {
+      },
+      "netnames": {
+        "out_0": {
+          "hide_name": 0,
+          "bits": [ "0" ],
+          "attributes": {
+            "src": "moduleWithHierarchicalOutput0.v:1"
+          }
+        },
+        "out_1": {
+          "hide_name": 0,
+          "bits": [ "0" ],
+          "attributes": {
+            "src": "moduleWithHierarchicalOutput0.v:1"
+          }
+        },
+        "out_2": {
+          "hide_name": 0,
+          "bits": [ "0" ],
+          "attributes": {
+            "src": "moduleWithHierarchicalOutput0.v:1"
+          }
+        }
+      }
+    }
+  }
+}

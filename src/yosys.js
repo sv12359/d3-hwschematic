@@ -11,10 +11,12 @@ import {
     hideChildrenAndNodes,
     getSourceAndTarget2,
     getSourceAndTargetForCell,
-    convertPortOrderingFromYosysToElk
+    convertPortOrderingFromYosysToElk, updatePortIndicesNoHierarchy
 } from "./yosysUtills.js";
 
 import {aggregateConcantsAndSplits} from "./yosysConcatAndSplitAggregation.js";
+
+import {setPortHierarchy} from "./yosysPortHierarchy.js";
 
 class LNodeMaker {
     constructor(name, yosysModule, idCounter, yosysModules, hierarchyLevel, nodePortNames) {
@@ -47,13 +49,18 @@ class LNodeMaker {
                 aggregateConcantsAndSplits(node);
             }
 
-        }
 
+        }
+        //convertPortOrderingFromYosysToElk(node);
         if (node.children !== undefined) {
             for (let child of node.children) {
-                convertPortOrderingFromYosysToElk(child);
                 if (child.hwMeta.cls === "Operator" && child.hwMeta.name.startsWith("FF")) {
                     orderClkAndRstPorts(child);
+                }
+            }
+            for (let child of node.children) {
+                if (child.hwMeta.cls !== "Operator") {
+                    setPortHierarchy(this, child, this.nodePortNames[child.id]);
                 }
             }
         }
@@ -65,6 +72,7 @@ class LNodeMaker {
         node.hwMeta.maxId = this.idCounter - 1;
         return node;
     }
+
     makeNode(name) {
         let node = {
             "id": this.idCounter.toString(), //generate, each component has unique id
@@ -104,6 +112,7 @@ class LNodeMaker {
                         portName = getPortNameSplice(cellObj.parameters.OFFSET, cellObj.parameters.Y_WIDTH);
                     }
                 } else if (isConcat) {
+                    //node.ports.reverse();
                     let par = cellObj.parameters;
 
                     if (portName === "Y") {
@@ -117,6 +126,10 @@ class LNodeMaker {
             }
             let direction = getPortDirectionFn(portObj);
             this.makeLPort(node.ports, portByName, originalPortName, portName, direction, node.hwMeta.name);
+        }
+        if (isConcat) {
+            node.ports = node.ports.reverse();
+            updatePortIndicesNoHierarchy(node.ports);
         }
     }
 
@@ -410,6 +423,8 @@ export function yosys(yosysJson) {
     let nodeBuilder = new LNodeMaker(topModuleName, yosysJson.modules[topModuleName], rootNodeBuilder.idCounter,
         yosysJson.modules, 1, nodePortNames);
     let node = nodeBuilder.make();
+    setPortHierarchy(nodeBuilder, node, nodeBuilder.nodePortNames[node.id]);
+    //convertPortOrderingFromYosysToElk(node);
     output.children.push(node);
     output.hwMeta.maxId = nodeBuilder.idCounter - 1;
     //yosysTranslateIcons(output);

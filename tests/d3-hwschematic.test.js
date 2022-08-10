@@ -2,7 +2,7 @@
 
 import * as d3 from "d3";
 import HwSchematic from '../src/d3-hwschematic';
-import { simulateEvent } from './simulateEvent.js';
+import {simulateEvent} from './simulateEvent.js';
 
 import * as fs from 'fs';
 import * as glob from 'glob';
@@ -106,22 +106,26 @@ test('Testing component expansion', () => {
 
 
 describe("Testing yosys", () => {
-	var testFiles = ["comparator", "mux2x1", "mux4x2", "constAdder", "subModuleBlackbox",
-		"subModuleBlackbox2", "partialConstDriver0", "partialConstDriver1", "partialConstDriver2",
-		"partialConstDriver3", "partialConstDriver4", "partialConstDriver5",
-		"partialConstDriver6", "wireModule", "split0", "split1", "split2",
-		"split3", "split4", "split5", "split6", "split7", "constPortDriver", "dff_sync_reset",
-		"fifo", "latchinf", "concat0", "concat1", "concat2", "fulladder_4bit"];
-	for (const testFile of testFiles) {
-		it("Testing file: " + testFile, () => {
-			var f = YOSYS_EXAMPLES + "/" + testFile + ".json";
-			var graphData = JSON.parse(fs.readFileSync(f));
-			var output = HwSchematic.fromYosys(graphData);
-			var refF = __dirname + "/data/" + testFile + ".json";
-			//fs.writeFileSync(refF, JSON.stringify(output, null, 2)); //create refFiles
-			var refGraphData = JSON.parse(fs.readFileSync(refF));
-			expect(output).toEqual(refGraphData);
-		})
-	}
+    var testFiles = ["comparator", "mux2x1", "mux4x2", "constAdder", "subModuleBlackbox",
+        "subModuleBlackbox2", "partialConstDriver0", "partialConstDriver1", "partialConstDriver2",
+        "partialConstDriver3", "partialConstDriver4", "partialConstDriver5",
+        "partialConstDriver6", "wireModule", "split0", "split1", "split2",
+        "split3", "split4", "split5", "split6", "split7", "constPortDriver", "dff_sync_reset",
+        "fifo", "latchinf", "concat0", "concat1", "concat2", "fulladder_4bit", "moduleWithHierarchicalOutput0",
+        "moduleWithHierarchicalOutput1", "moduleWithHierarchicalOutput2", "moduleWithHierarchicalOutput3"];
+
+    //var testFiles = ["concat0"]
+
+    for (const testFile of testFiles) {
+        it("Testing file: " + testFile, () => {
+            var f = YOSYS_EXAMPLES + "/" + testFile + ".json";
+            var graphData = JSON.parse(fs.readFileSync(f));
+            var output = HwSchematic.fromYosys(graphData);
+            var refF = __dirname + "/data/" + testFile + ".json";
+            //fs.writeFileSync(refF, JSON.stringify(output, null, 2)); //create refFiles
+            var refGraphData = JSON.parse(fs.readFileSync(refF));
+            expect(output).toEqual(refGraphData);
+        })
+    }
 });
 
