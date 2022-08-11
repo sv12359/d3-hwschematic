@@ -1,43 +1,25 @@
-import {convertPortOrderingFromYosysToElk, updatePortIndices} from "./yosysUtills.js";
+import {convertPortOrderingFromYosysToElk} from "./yosysUtills.js";
 
 function createPortHierarchy(nodeBuilder, node, portsAggregatedByPrefix, newPortList, portByName) {
     if (!portsAggregatedByPrefix.hasMultipleChildren()) {
         newPortList.push(portsAggregatedByPrefix.getAnyChildren());
-        //console.log("1: " + portsAggregatedByPrefix.getAnyChildren().hwMeta.name);
         return;
     }
     if (portsAggregatedByPrefix.namePrefix !== "") {
         // add header of a port group if required
-
-        let direction = portsAggregatedByPrefix.getAnyChildren().direction.toLowerCase();
+        let direction = portsAggregatedByPrefix.getMajorityDirection().toLowerCase();
         let portGroupHeaderPort = nodeBuilder.makeLPort(newPortList, portByName,
             portsAggregatedByPrefix.namePrefix, portsAggregatedByPrefix.namePrefix, direction, node.name);
         newPortList = portGroupHeaderPort.children;
     }
     for (let port of portsAggregatedByPrefix.children) {
         newPortList.push(port);
-        //console.log("2: " + port.hwMeta.name);
     }
-    for (let [prefix, nameDictNode] of Object.entries(portsAggregatedByPrefix.nestedChildren)) {
+    for (let [_, nameDictNode] of Object.entries(portsAggregatedByPrefix.nestedChildren)) {
         createPortHierarchy(nodeBuilder, node, nameDictNode, newPortList, portByName);
     }
 }
 
-/*
-function getPortStartNameToPorts_(ports) {
-    let portPrefixToPortsDict = {};
-    for (let port of ports) {
-        let name = port.hwMeta.name.split("_")[0];
-        if (portPrefixToPortsDict[name] === undefined) {
-            portPrefixToPortsDict[name] = [port];
-        } else {
-            portPrefixToPortsDict[name].push(port);
-        }
-    }
-
-    return portPrefixToPortsDict;
-}
-*/
 class NameDictNode {
     constructor(namePrefix) {
         this.namePrefix = namePrefix;
@@ -67,6 +49,7 @@ class NameDictNode {
             }
         }
     }
+
     hasMultipleChildren() {
         if (this.children.length > 1) {
             return true;
@@ -83,6 +66,36 @@ class NameDictNode {
                 return subNode.hasMultipleChildren();
             }
             return false;
+        }
+    }
+
+    static fillDirectionDictFromNestedChildren(nestedChildren, directionDict) {
+        for (let [_, nameNodeDict] of Object.entries(nestedChildren)) {
+            let direction = nameNodeDict.getMajorityDirection(directionDict);
+            directionDict[direction] += 1;
+        }
+    }
+
+    static fillDirectionDictFromChildren(children, directionDict) {
+        for (let child of children) {
+            directionDict[child.direction] += 1;
+        }
+    }
+
+    getMajorityDirection() {
+        let directionDict = {"INPUT": 0, "OUTPUT": 0};
+        NameDictNode.fillDirectionDictFromChildren(this.children, directionDict);
+        NameDictNode.fillDirectionDictFromNestedChildren(this.nestedChildren, directionDict);
+
+        let input = directionDict["INPUT"];
+        let output = directionDict["OUTPUT"];
+
+        if (output > input) {
+            return "OUTPUT"
+        } else if (output < input) {
+            return "INPUT"
+        } else {
+            return this.getAnyChildren().direction;
         }
     }
 }
@@ -120,17 +133,59 @@ function getPortStartNameToPorts(ports) {
     return root;
 }
 
-function setPortSideRec(ports, side) {
-    for (let port of ports) {
-        port.properties.side = side;
-        setPortSideRec(port.children, side);
+function setPortSidesRec(port, side) {
+    port.properties.side = side;
+    for (let child of port.children) {
+        setPortSidesRec(child, side);
     }
 }
 
-function setPortSide(ports) {
+function fillPortSideDict(ports, portSideDict) {
     for (let port of ports) {
         let side = port.properties.side;
-        setPortSideRec(port.children, side);
+        portSideDict[side] += 1;
+        fillPortSideDict(port.children, portSideDict);
+    }
+}
+
+function isMax(potentialMax, valueList) {
+    for (let value of valueList) {
+        if (potentialMax <= value) {
+            return false
+        }
+    }
+    return true;
+}
+
+function getMaxOfPortSideDict(portSideDict, defaultSide) {
+    let north = portSideDict["NORTH"]
+    let east = portSideDict["EAST"]
+    let south = portSideDict["SOUTH"]
+    let west = portSideDict["WEST"]
+    if (isMax(north, [east, south, west])) {
+        return "NORTH"
+    } else if (isMax(east, [north, south, west])) {
+        return "EAST"
+
+    } else if (isMax(south, [north, east, west])) {
+        return "SOUTH"
+
+    } else if (isMax(west, [north, east, south])) {
+        return "WEST"
+    }
+
+    return defaultSide;
+}
+
+function getMajoritySide(port) {
+    let portSideDict = {"NORTH": 0, "EAST": 0, "WEST": 0, "SOUTH": 0};
+    fillPortSideDict(port.children, portSideDict);
+    return getMaxOfPortSideDict(portSideDict, port.properties.side);
+}
+function setPortSides(ports) {
+    for (let port of ports) {
+        let side = getMajoritySide(port);
+        setPortSidesRec(port, side);
     }
 }
 
@@ -141,7 +196,7 @@ export function setPortHierarchy(nodeBuilder, node, portByName) {
         let newPortList = [];
         createPortHierarchy(nodeBuilder, node, portsAggregatedByPrefix, newPortList, portByName);
         node.ports = newPortList;
-        setPortSide(node.ports);
+        setPortSides(node.ports);
 
         convertPortOrderingFromYosysToElk(node);
     }
