@@ -3,7 +3,7 @@
   "hwMeta": {
     "name": "root",
     "cls": "",
-    "maxId": 28
+    "maxId": 29
   },
   "properties": {
     "org.eclipse.elk.portConstraints": "FIXED_ORDER",
@@ -88,71 +88,17 @@
       ],
       "edges": [
         {
-          "id": "23",
+          "id": "29",
           "sources": [
             [
-              "6",
-              "7"
+              "1",
+              "28"
             ]
           ],
           "targets": [
             [
-              "1",
-              "2"
-            ]
-          ],
-          "hwMeta": {
-            "name": "out_0"
-          }
-        },
-        {
-          "id": "24",
-          "sources": [
-            [
               "6",
-              "8"
-            ]
-          ],
-          "targets": [
-            [
-              "1",
-              "3"
-            ]
-          ],
-          "hwMeta": {
-            "name": "out_1"
-          }
-        },
-        {
-          "id": "25",
-          "sources": [
-            [
-              "6",
-              "9"
-            ]
-          ],
-          "targets": [
-            [
-              "1",
-              "4"
-            ]
-          ],
-          "hwMeta": {
-            "name": "out_2"
-          }
-        },
-        {
-          "id": "26",
-          "sources": [
-            [
-              "6",
-              "10"
-            ]
-          ],
-          "targets": [
-            [
-              "1",
-              "5"
+              "27"
             ]
           ],
           "hwMeta": {

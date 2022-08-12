@@ -25,7 +25,7 @@ function getNodeIdToNodeDict(node,) {
     return nodeIdToNodeDict;
 }
 
-function getPortToEdgeDict(edges) {
+export function getPortToEdgeDict(edges) {
     let portToEdgeDict = {};
     for (let edge of edges) {
         let targets = edge.targets;

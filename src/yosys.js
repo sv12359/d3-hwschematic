@@ -11,12 +11,14 @@ import {
     hideChildrenAndNodes,
     getSourceAndTarget2,
     getSourceAndTargetForCell,
-    convertPortOrderingFromYosysToElk, updatePortIndicesNoHierarchy
+    updatePortIndicesNoHierarchy
 } from "./yosysUtills.js";
 
 import {aggregateConcantsAndSplits} from "./yosysConcatAndSplitAggregation.js";
 
 import {setPortHierarchy} from "./yosysPortHierarchy.js";
+
+import {aggregateHierarchicalPortEdges} from "./hierarchicalPortEdges.js";
 
 class LNodeMaker {
     constructor(name, yosysModule, idCounter, yosysModules, hierarchyLevel, nodePortNames) {
@@ -28,6 +30,7 @@ class LNodeMaker {
         this.nodePortNames = nodePortNames;
         this.childrenWithoutPortArray = [];
         this.nodeIdToCell = {};
+        this.nodeIdToBuilder = {};
     }
 
     make() {
@@ -51,7 +54,6 @@ class LNodeMaker {
 
 
         }
-        //convertPortOrderingFromYosysToElk(node);
         if (node.children !== undefined) {
             for (let child of node.children) {
                 if (child.hwMeta.cls === "Operator" && child.hwMeta.name.startsWith("FF")) {
@@ -62,8 +64,10 @@ class LNodeMaker {
                 if (child.hwMeta.cls !== "Operator") {
                     setPortHierarchy(this, child, this.nodePortNames[child.id]);
                 }
+                aggregateHierarchicalPortEdges(this.nodeIdToBuilder[child.id], child);
             }
         }
+
 
         if (this.hierarchyLevel > 1) {
             hideChildrenAndNodes(node, this.yosysModule);
@@ -112,7 +116,6 @@ class LNodeMaker {
                         portName = getPortNameSplice(cellObj.parameters.OFFSET, cellObj.parameters.Y_WIDTH);
                     }
                 } else if (isConcat) {
-                    //node.ports.reverse();
                     let par = cellObj.parameters;
 
                     if (portName === "Y") {
@@ -167,6 +170,7 @@ class LNodeMaker {
             let nodeBuilder = new LNodeMaker(cellName, cellModuleObj, this.idCounter, this.yosysModules,
                 this.hierarchyLevel + 1, this.nodePortNames);
             let subNode = nodeBuilder.make();
+            this.nodeIdToBuilder[subNode.id] = nodeBuilder;
             this.idCounter = nodeBuilder.idCounter;
             node.children.push(subNode);
             yosysTranslateIcons(subNode, cellObj);
@@ -426,6 +430,8 @@ export function yosys(yosysJson) {
     setPortHierarchy(nodeBuilder, node, nodeBuilder.nodePortNames[node.id]);
     //convertPortOrderingFromYosysToElk(node);
     output.children.push(node);
+    aggregateHierarchicalPortEdges(nodeBuilder, output.children[0]);
+
     output.hwMeta.maxId = nodeBuilder.idCounter - 1;
     //yosysTranslateIcons(output);
     //print output to console
