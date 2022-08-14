@@ -123,7 +123,7 @@
           "hwMeta": {
             "name": "SLICE",
             "cls": "Operator",
-            "maxId": "10"
+            "maxId": 10
           },
           "properties": {
             "org.eclipse.elk.portConstraints": "FIXED_ORDER",

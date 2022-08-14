@@ -17,7 +17,7 @@
       "hwMeta": {
         "name": "moduleWithHierarchicalOutput5",
         "cls": "",
-        "maxId": "38"
+        "maxId": 38
       },
       "properties": {
         "org.eclipse.elk.portConstraints": "FIXED_ORDER",

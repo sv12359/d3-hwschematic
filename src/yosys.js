@@ -20,25 +20,7 @@ import {setPortHierarchy} from "./yosysPortHierarchy.js";
 
 import {aggregateHierarchicalPortEdges} from "./hierarchicalPortEdges.js";
 
-function assertBuilderIdCounterBefore(parentBuilder, childBuilder){
-    if (childBuilder === undefined) {
-        return;
-    }
-    if (parseInt(parentBuilder.idCounter) > parseInt(childBuilder.idCounter)) {
-        throw new Error("ParentBuilderIdCounter is bigger than childBuilderIdCounter (before)");
-    }
 
-}
-
-function assertBuilderIdCounterAfter(parentBuilder, childBuilder){
-    if (childBuilder === undefined) {
-        return;
-    }
-    if (parseInt(parentBuilder.idCounter) < parseInt(childBuilder.idCounter)) {
-        throw new Error("ParentBuilderIdCounter is smaller than childBuilderIdCounter (after)");
-    }
-
-}
 /**
  * :ivar name: name of the node represented by LNodeMaker
  * :ivar yosysModule: module from which the node if built
@@ -102,17 +84,12 @@ class LNodeMaker {
                     this.idCounter = undefined;
                 }
 
-                //assertBuilderIdCounterBefore(this, this.nodeIdToBuilder[child.id])
                 aggregateHierarchicalPortEdges(this.nodeIdToBuilder[child.id], child, this.portSuffixesAreEqual);
 
                 if (childBuilder) {
-                    if (parseInt(child.hwMeta.maxId) < childBuilder.idCounter) {
-                        //child.hwMeta.maxId = childBuilder.idCounter;
-                    }
                     this.idCounter = childBuilder.idCounter;
                     childBuilder.idCounter = undefined;
                 }
-                //assertBuilderIdCounterAfter(this, this.nodeIdToBuilder[child.id])
             }
         }
 
@@ -464,84 +441,7 @@ class LNodeMaker {
 
 }
 
-function isDuplicit(node, idDict) {
-    if (idDict[node.id] === undefined)
-    {
-        idDict[node.id] = node;
-    } else {
-        throw new Error(("Duplicit id detected: " + node.id + ": " + node.hwMeta.name + " and "  + node.id + ": " + idDict[node.id].hwMeta.name));
-    }
-}
-function detectDuplicitIds(node, idDict) {
-    isDuplicit(node, idDict);
-    let children = node.children || node._children
-    if (children !== undefined) {
-        for (let child of children) {
-            detectDuplicitIds(child, idDict);
-        }
-    }
-    let edges = node.edges || node._edges;
-    if (edges !== undefined) {
-        for (let edge of edges) {
-            detectDuplicitIds(edge, idDict)
-        }
-    }
 
-    let ports = node.ports || node._ports;
-    if (ports !== undefined) {
-        for (let port of ports) {
-            detectDuplicitIds(port, idDict)
-        }
-    }
-}
-
-function checkMaxIdPorts(maxId, port) {
-    if (maxId < parseInt(port.id))
-    {
-        throw new Error("Max ids are not correct (port)");
-    }
-
-    for (let childPort of port.children) {
-        checkMaxIdPorts(maxId, childPort)
-    }
-}
-
-function checkMaxId(node) {
-    let maxId = parseInt(node.hwMeta.maxId);
-    let children = node.children || node._children
-    if (children !== undefined) {
-        for (let child of children) {
-            checkMaxId(child);
-            if (maxId < parseInt(child.id)) {
-                throw new Error("Max ids are not correct (child)");
-            }
-        }
-    }
-
-    if (maxId < parseInt(node.id)) {
-        throw new Error("Max ids are not correct (self)");
-    }
-
-    let edges = node.edges || node._edges;
-    if (edges !== undefined) {
-        for (let edge of edges) {
-            if (maxId < parseInt(edge.id))
-            {
-                throw new Error("Max ids are not correct (edge)");
-            }
-        }
-    }
-
-    let ports = node.ports || node._ports;
-    if (ports !== undefined) {
-        for (let port of ports) {
-            checkMaxIdPorts(maxId, port)
-        }
-    }
-
-
-
-}
 export function yosys(yosysJson) {
 
     function portSuffixesAreEqual(leftSuffix, rightSuffix) {
@@ -576,8 +476,6 @@ export function yosys(yosysJson) {
     //console.log(JSON.stringify(output, null, 2));
 
     //detectDuplicitIds(node, {});
-    //console.log("[SUCCESS] detectDuplicitIds: no duplicit ids were found");
-
     //checkMaxId(node);
     return output;
 }

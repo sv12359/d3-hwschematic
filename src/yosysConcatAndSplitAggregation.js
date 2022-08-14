@@ -70,7 +70,7 @@ function getEdgeTargetsIndex(targets, portId) {
  * :attention: properties.index is not an index of the port in port list
  * :attention: port.properties.index must be updated later
  */
-function aggregateTwoConcats(leftConcatInputPorts, rightConcatNode, targetPort, portIdToEdgeDict) {
+function aggregateTwoConcats(leftConcatNode, leftConcatInputPorts, rightConcatNode, targetPort, portIdToEdgeDict) {
 
     if (targetPort.properties.index !== 0) {
         //throw new Error("Port index is not zero, need to regenerate indices in port labels");
@@ -82,23 +82,23 @@ function aggregateTwoConcats(leftConcatInputPorts, rightConcatNode, targetPort, 
     }
     let i = 0;
     for (let oldTargetPort of leftConcatInputPorts) {
-        let oldTargetPortId = oldTargetPort.id;
-        let edge = portIdToEdgeDict[oldTargetPortId];
-        let edgeTargetsIndex = getEdgeTargetsIndex(edge.targets, oldTargetPortId);
+        let leftConcatNodeMaxId = oldTargetPort.id;
+        let edge = portIdToEdgeDict[leftConcatNodeMaxId];
+        let edgeTargetsIndex = getEdgeTargetsIndex(edge.targets, leftConcatNodeMaxId);
         edge.targets[edgeTargetsIndex][0] = rightConcatNode.id;
 
         if (i === 0) {
             // replace first port which should be first input port on target concatenation
             rightConcatNode.ports[newTargetPortIndex] = oldTargetPort;
-            if (parseInt(rightConcatNode.hwMeta.maxId) < parseInt(oldTargetPortId.id)) {
-                rightConcatNode.hwMeta.maxId = oldTargetPort.id;
-            }
+
         } else {
             //insert another input after current port
             rightConcatNode.ports.splice(newTargetPortIndex + i, 0, oldTargetPort)
-            if (parseInt(rightConcatNode.hwMeta.maxId) < parseInt(oldTargetPortId.id)) {
-                rightConcatNode.hwMeta.maxId = oldTargetPort.id;
-            }
+
+        }
+        leftConcatNodeMaxId = leftConcatNode.hwMeta.maxId;
+        if (rightConcatNode.hwMeta.maxId < leftConcatNodeMaxId) {
+            rightConcatNode.hwMeta.maxId = leftConcatNodeMaxId;
         }
         ++i;
     }
@@ -145,7 +145,7 @@ function aggregateConcats(node, childrenConcats, portIdToEdgeDict, portIdToPortD
                 let targetPort = portIdToPortDict[portId];
                 //let targetPort = getTargetPort(leftConcatNode.ports);
                 let leftConcatInputPorts = getChildInputPorts(leftConcatNode.ports);
-                aggregateTwoConcats(leftConcatInputPorts, rightConcatNode, targetPort, portIdToEdgeDict)
+                aggregateTwoConcats(leftConcatNode, leftConcatInputPorts, rightConcatNode, targetPort, portIdToEdgeDict)
                 edgesToDelete.add(edge.id);
                 childrenToDelete.add(leftConcatNode.id);
             }
@@ -179,8 +179,9 @@ function fillConcats(children) {
 function aggregateTwoSplits(innitialNode, oldNode, portIdToEdgeDict) {
     let oldNodePort = oldNode.ports[1];
     innitialNode.ports.push(oldNodePort);
-    if (parseInt(innitialNode.hwMeta.maxId) < parseInt(oldNodePort.id)) {
-        innitialNode.hwMeta.maxId = oldNodePort.id;
+    let oldNodeMaxId = oldNode.hwMeta.maxId;
+    if (innitialNode.hwMeta.maxId < oldNodeMaxId) {
+        innitialNode.hwMeta.maxId = oldNodeMaxId;
     }
     let edgeOnSplitOutput = portIdToEdgeDict[oldNodePort.id];
     edgeOnSplitOutput.sources[0][0] = innitialNode.id;

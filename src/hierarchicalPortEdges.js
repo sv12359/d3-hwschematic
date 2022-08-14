@@ -117,12 +117,14 @@ function createAggregatedEdge(parent, child, nodeBuilder, leftPort, portIdToEdge
     }
     let edges = parent.edges || parent._edges;
     edges.push(newEdge);
-    if (parseInt(parent.hwMeta.maxId) < parseInt(newEdge.id)) {
-        parent.hwMeta.maxId = newEdge.id;
-    }
+    parent.hwMeta.maxId = nodeBuilder.idCounter - 1;
+
 
     portIdToEdgeDict[leftPortId] = newEdge;
     portIdToEdgeDict[rightPortId] = newEdge;
+
+
+
 
 }
 function aggregateHierarchicalPortEdgesRec(parent, child, nodeBuilder, ports, portIdToEdgeDict, childIdToParentDict, portIdToPortDict, leftPortIdToRightPortIdDict, portIdToNodeIdDict, edgesToDelete, portSuffixesAreEqual) {
