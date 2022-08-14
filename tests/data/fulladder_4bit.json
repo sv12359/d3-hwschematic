@@ -453,7 +453,7 @@
           "hwMeta": {
             "name": "CONCAT",
             "cls": "Operator",
-            "maxId": 15
+            "maxId": 18
           },
           "properties": {
             "org.eclipse.elk.portConstraints": "FIXED_ORDER",
@@ -527,7 +527,7 @@
           "hwMeta": {
             "name": "SLICE",
             "cls": "Operator",
-            "maxId": 19
+            "maxId": "39"
           },
           "properties": {
             "org.eclipse.elk.portConstraints": "FIXED_ORDER",
@@ -601,7 +601,7 @@
           "hwMeta": {
             "name": "SLICE",
             "cls": "Operator",
-            "maxId": 22
+            "maxId": "42"
           },
           "properties": {
             "org.eclipse.elk.portConstraints": "FIXED_ORDER",
@@ -675,7 +675,7 @@
           "hwMeta": {
             "name": "f0",
             "cls": "",
-            "maxId": 86
+            "maxId": 253
           },
           "properties": {
             "org.eclipse.elk.portConstraints": "FIXED_ORDER",
@@ -762,7 +762,7 @@
               "hwMeta": {
                 "name": "AND",
                 "cls": "Operator",
-                "maxId": 49
+                "maxId": 52
               },
               "properties": {
                 "org.eclipse.elk.portConstraints": "FIXED_ORDER",
@@ -812,7 +812,7 @@
               "hwMeta": {
                 "name": "AND",
                 "cls": "Operator",
-                "maxId": 53
+                "maxId": 56
               },
               "properties": {
                 "org.eclipse.elk.portConstraints": "FIXED_ORDER",
@@ -862,7 +862,7 @@
               "hwMeta": {
                 "name": "AND",
                 "cls": "Operator",
-                "maxId": 57
+                "maxId": 60
               },
               "properties": {
                 "org.eclipse.elk.portConstraints": "FIXED_ORDER",
@@ -912,7 +912,7 @@
               "hwMeta": {
                 "name": "OR",
                 "cls": "Operator",
-                "maxId": 61
+                "maxId": 64
               },
               "properties": {
                 "org.eclipse.elk.portConstraints": "FIXED_ORDER",
@@ -962,7 +962,7 @@
               "hwMeta": {
                 "name": "OR",
                 "cls": "Operator",
-                "maxId": 65
+                "maxId": 68
               },
               "properties": {
                 "org.eclipse.elk.portConstraints": "FIXED_ORDER",
@@ -1012,7 +1012,7 @@
               "hwMeta": {
                 "name": "XOR",
                 "cls": "Operator",
-                "maxId": 69
+                "maxId": 72
               },
               "properties": {
                 "org.eclipse.elk.portConstraints": "FIXED_ORDER",
@@ -1062,7 +1062,7 @@
               "hwMeta": {
                 "name": "XOR",
                 "cls": "Operator",
-                "maxId": 73
+                "maxId": 76
               },
               "properties": {
                 "org.eclipse.elk.portConstraints": "FIXED_ORDER",
@@ -1320,7 +1320,7 @@
           "hwMeta": {
             "name": "f1",
             "cls": "",
-            "maxId": 130
+            "maxId": 254
           },
           "properties": {
             "org.eclipse.elk.portConstraints": "FIXED_ORDER",
@@ -1407,7 +1407,7 @@
               "hwMeta": {
                 "name": "AND",
                 "cls": "Operator",
-                "maxId": 93
+                "maxId": 96
               },
               "properties": {
                 "org.eclipse.elk.portConstraints": "FIXED_ORDER",
@@ -1457,7 +1457,7 @@
               "hwMeta": {
                 "name": "AND",
                 "cls": "Operator",
-                "maxId": 97
+                "maxId": 100
               },
               "properties": {
                 "org.eclipse.elk.portConstraints": "FIXED_ORDER",
@@ -1507,7 +1507,7 @@
               "hwMeta": {
                 "name": "AND",
                 "cls": "Operator",
-                "maxId": 101
+                "maxId": 104
               },
               "properties": {
                 "org.eclipse.elk.portConstraints": "FIXED_ORDER",
@@ -1557,7 +1557,7 @@
               "hwMeta": {
                 "name": "OR",
                 "cls": "Operator",
-                "maxId": 105
+                "maxId": 108
               },
               "properties": {
                 "org.eclipse.elk.portConstraints": "FIXED_ORDER",
@@ -1607,7 +1607,7 @@
               "hwMeta": {
                 "name": "OR",
                 "cls": "Operator",
-                "maxId": 109
+                "maxId": 112
               },
               "properties": {
                 "org.eclipse.elk.portConstraints": "FIXED_ORDER",
@@ -1657,7 +1657,7 @@
               "hwMeta": {
                 "name": "XOR",
                 "cls": "Operator",
-                "maxId": 113
+                "maxId": 116
               },
               "properties": {
                 "org.eclipse.elk.portConstraints": "FIXED_ORDER",
@@ -1707,7 +1707,7 @@
               "hwMeta": {
                 "name": "XOR",
                 "cls": "Operator",
-                "maxId": 117
+                "maxId": 120
               },
               "properties": {
                 "org.eclipse.elk.portConstraints": "FIXED_ORDER",
@@ -1965,7 +1965,7 @@
           "hwMeta": {
             "name": "f2",
             "cls": "",
-            "maxId": 174
+            "maxId": 255
           },
           "properties": {
             "org.eclipse.elk.portConstraints": "FIXED_ORDER",
@@ -2052,7 +2052,7 @@
               "hwMeta": {
                 "name": "AND",
                 "cls": "Operator",
-                "maxId": 137
+                "maxId": 140
               },
               "properties": {
                 "org.eclipse.elk.portConstraints": "FIXED_ORDER",
@@ -2102,7 +2102,7 @@
               "hwMeta": {
                 "name": "AND",
                 "cls": "Operator",
-                "maxId": 141
+                "maxId": 144
               },
               "properties": {
                 "org.eclipse.elk.portConstraints": "FIXED_ORDER",
@@ -2152,7 +2152,7 @@
               "hwMeta": {
                 "name": "AND",
                 "cls": "Operator",
-                "maxId": 145
+                "maxId": 148
               },
               "properties": {
                 "org.eclipse.elk.portConstraints": "FIXED_ORDER",
@@ -2202,7 +2202,7 @@
               "hwMeta": {
                 "name": "OR",
                 "cls": "Operator",
-                "maxId": 149
+                "maxId": 152
               },
               "properties": {
                 "org.eclipse.elk.portConstraints": "FIXED_ORDER",
@@ -2252,7 +2252,7 @@
               "hwMeta": {
                 "name": "OR",
                 "cls": "Operator",
-                "maxId": 153
+                "maxId": 156
               },
               "properties": {
                 "org.eclipse.elk.portConstraints": "FIXED_ORDER",
@@ -2302,7 +2302,7 @@
               "hwMeta": {
                 "name": "XOR",
                 "cls": "Operator",
-                "maxId": 157
+                "maxId": 160
               },
               "properties": {
                 "org.eclipse.elk.portConstraints": "FIXED_ORDER",
@@ -2352,7 +2352,7 @@
               "hwMeta": {
                 "name": "XOR",
                 "cls": "Operator",
-                "maxId": 161
+                "maxId": 164
               },
               "properties": {
                 "org.eclipse.elk.portConstraints": "FIXED_ORDER",
@@ -2610,7 +2610,7 @@
           "hwMeta": {
             "name": "f3",
             "cls": "",
-            "maxId": 218
+            "maxId": 256
           },
           "properties": {
             "org.eclipse.elk.portConstraints": "FIXED_ORDER",
@@ -2697,7 +2697,7 @@
               "hwMeta": {
                 "name": "AND",
                 "cls": "Operator",
-                "maxId": 181
+                "maxId": 184
               },
               "properties": {
                 "org.eclipse.elk.portConstraints": "FIXED_ORDER",
@@ -2747,7 +2747,7 @@
               "hwMeta": {
                 "name": "AND",
                 "cls": "Operator",
-                "maxId": 185
+                "maxId": 188
               },
               "properties": {
                 "org.eclipse.elk.portConstraints": "FIXED_ORDER",
@@ -2797,7 +2797,7 @@
               "hwMeta": {
                 "name": "AND",
                 "cls": "Operator",
-                "maxId": 189
+                "maxId": 192
               },
               "properties": {
                 "org.eclipse.elk.portConstraints": "FIXED_ORDER",
@@ -2847,7 +2847,7 @@
               "hwMeta": {
                 "name": "OR",
                 "cls": "Operator",
-                "maxId": 193
+                "maxId": 196
               },
               "properties": {
                 "org.eclipse.elk.portConstraints": "FIXED_ORDER",
@@ -2897,7 +2897,7 @@
               "hwMeta": {
                 "name": "OR",
                 "cls": "Operator",
-                "maxId": 197
+                "maxId": 200
               },
               "properties": {
                 "org.eclipse.elk.portConstraints": "FIXED_ORDER",
@@ -2947,7 +2947,7 @@
               "hwMeta": {
                 "name": "XOR",
                 "cls": "Operator",
-                "maxId": 201
+                "maxId": 204
               },
               "properties": {
                 "org.eclipse.elk.portConstraints": "FIXED_ORDER",
@@ -2997,7 +2997,7 @@
               "hwMeta": {
                 "name": "XOR",
                 "cls": "Operator",
-                "maxId": 205
+                "maxId": 208
               },
               "properties": {
                 "org.eclipse.elk.portConstraints": "FIXED_ORDER",

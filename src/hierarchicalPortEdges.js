@@ -27,7 +27,7 @@ function getRightId(leftId, edge, portIdToPortDict) {
 
     throw new Error("PortId was not found");
 }
-function allPortsAreConnected(ports, portIdToEdgeDict, childIdToParentDict, portIdToPortDict, leftPortIdToRightPortIdDict){
+function allPortsAreConnected(ports, portIdToEdgeDict, childIdToParentDict, portIdToPortDict, leftPortIdToRightPortIdDict, portSuffixesAreEqual){
     if (ports.length === 0) {
         return false;
     }
@@ -70,13 +70,10 @@ function allPortsAreConnected(ports, portIdToEdgeDict, childIdToParentDict, port
         let leftSuffix = leftName.slice(leftParentName.length)
         let rightSuffix = rightName.slice(rightParentName.length)
 
-        if (leftSuffix !== rightSuffix) {
+        if (!portSuffixesAreEqual(leftSuffix, rightSuffix)) {
             return false
         }
 
-        if (leftParentName !== rightParentName) {
-            return false;
-        }
 
     }
     leftPortIdToRightPortIdDict[leftParent.id] = rightParent.id;
@@ -101,14 +98,14 @@ function getNodeIds(leftPortId, edge) {
 
 
 }
-function createAggregatedEdge(parent, nodeBuilder, leftPort, portIdToEdgeDict, portIdToPortDict, childIdToParentDict, leftPortIdToRightPortIdDict, portIdToNodeIdDict) {
+function createAggregatedEdge(parent, child, nodeBuilder, leftPort, portIdToEdgeDict, portIdToPortDict, childIdToParentDict, leftPortIdToRightPortIdDict, portIdToNodeIdDict) {
     let leftPortId = leftPort.id;
     let rightPortId = leftPortIdToRightPortIdDict[leftPortId];
 
     let leftNodeId = portIdToNodeIdDict[leftPortId];
     let rightNodeId = portIdToNodeIdDict[rightPortId];
 
-    let newEdge = nodeBuilder.makeLEdge(leftPort.hwMeta.name);
+    let newEdge = nodeBuilder.makeLEdge(leftPort.hwMeta.name, leftPort);
     if (leftPort.direction === "INPUT") {
         newEdge.sources.push([leftNodeId, leftPortId]);
         newEdge.targets.push([rightNodeId, rightPortId]);
@@ -118,23 +115,24 @@ function createAggregatedEdge(parent, nodeBuilder, leftPort, portIdToEdgeDict, p
     } else {
         throw new Error ("Invalid direction: " + leftPort.direction);
     }
-    parent.edges.push(newEdge);
+    let edges = parent.edges || parent._edges;
+    edges.push(newEdge);
+    if (parseInt(parent.hwMeta.maxId) < parseInt(newEdge.id)) {
+        parent.hwMeta.maxId = newEdge.id;
+    }
 
     portIdToEdgeDict[leftPortId] = newEdge;
     portIdToEdgeDict[rightPortId] = newEdge;
 
-
-
-
 }
-function aggregateHierarchicalPortEdgesRec(parent, node, nodeBuilder, ports, portIdToEdgeDict, childIdToParentDict, portIdToPortDict, leftPortIdToRightPortIdDict, portIdToNodeIdDict, edgesToDelete) {
+function aggregateHierarchicalPortEdgesRec(parent, child, nodeBuilder, ports, portIdToEdgeDict, childIdToParentDict, portIdToPortDict, leftPortIdToRightPortIdDict, portIdToNodeIdDict, edgesToDelete, portSuffixesAreEqual) {
     for (let port of ports) {
-        aggregateHierarchicalPortEdgesRec(parent, node, nodeBuilder, port.children, portIdToEdgeDict, childIdToParentDict, portIdToPortDict, leftPortIdToRightPortIdDict, portIdToNodeIdDict, edgesToDelete);
-        if (allPortsAreConnected(port.children, portIdToEdgeDict, childIdToParentDict, portIdToPortDict, leftPortIdToRightPortIdDict)) {
+        aggregateHierarchicalPortEdgesRec(parent, child, nodeBuilder, port.children, portIdToEdgeDict, childIdToParentDict, portIdToPortDict, leftPortIdToRightPortIdDict, portIdToNodeIdDict, edgesToDelete, portSuffixesAreEqual);
+        if (allPortsAreConnected(port.children, portIdToEdgeDict, childIdToParentDict, portIdToPortDict, leftPortIdToRightPortIdDict, portSuffixesAreEqual)) {
             for (let childPort of port.children) {
                 edgesToDelete.add(portIdToEdgeDict[childPort.id].id);
             }
-            createAggregatedEdge(parent, nodeBuilder, port, portIdToEdgeDict, portIdToPortDict, childIdToParentDict, leftPortIdToRightPortIdDict, portIdToNodeIdDict);
+            createAggregatedEdge(parent, child, nodeBuilder, port, portIdToEdgeDict, portIdToPortDict, childIdToParentDict, leftPortIdToRightPortIdDict, portIdToNodeIdDict);
 
         }
     }
@@ -162,28 +160,28 @@ function getPortIdToNodeIdDict(nodeId, ports, portIdToNodeIdDict) {
         getPortIdToNodeIdDict(nodeId, children, portIdToNodeIdDict);
     }
 }
-export function aggregateHierarchicalPortEdges(nodeBuilder, parent) {
+export function aggregateHierarchicalPortEdges(nodeBuilder, parent, portSuffixesAreEqual) {
     let edges = parent.edges || parent._edges;
     let children = parent.children || parent._children;
     if (edges === undefined || children === undefined) {
         return;
     }
     let childIdToParentDict = {};
-    let portIdToPortDict = {}
-    let portIdToNodeIdDict = {}
+    let portIdToPortDict = {};
+    let portIdToNodeIdDict = {};
     let edgesToDelete = new Set();
 
     let portIdToEdgeDict = getPortToEdgeDict(edges);
     getChildIdToParentDict(parent, parent.ports, childIdToParentDict);
     getPortIdToPortDict_(parent.ports, portIdToPortDict);
     getPortIdToNodeIdDict(parent.id, parent.ports, portIdToNodeIdDict);
-    for (let node of children) {
-        getChildIdToParentDict(node, node.ports, childIdToParentDict);
-        getPortIdToPortDict_(node.ports, portIdToPortDict);
-        getPortIdToNodeIdDict(node.id, node.ports, portIdToNodeIdDict);
+    for (let child of children) {
+        getChildIdToParentDict(child, child.ports, childIdToParentDict);
+        getPortIdToPortDict_(child.ports, portIdToPortDict);
+        getPortIdToNodeIdDict(child.id, child.ports, portIdToNodeIdDict);
     }
-    for (let node of children) {
-        aggregateHierarchicalPortEdgesRec(parent, node, nodeBuilder, node.ports, portIdToEdgeDict, childIdToParentDict, portIdToPortDict, {}, portIdToNodeIdDict, edgesToDelete);
+    for (let child of children) {
+        aggregateHierarchicalPortEdgesRec(parent, child, nodeBuilder, child.ports, portIdToEdgeDict, childIdToParentDict, portIdToPortDict, {}, portIdToNodeIdDict, edgesToDelete, portSuffixesAreEqual);
 
     }
 

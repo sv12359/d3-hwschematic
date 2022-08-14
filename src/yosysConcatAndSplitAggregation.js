@@ -90,9 +90,15 @@ function aggregateTwoConcats(leftConcatInputPorts, rightConcatNode, targetPort, 
         if (i === 0) {
             // replace first port which should be first input port on target concatenation
             rightConcatNode.ports[newTargetPortIndex] = oldTargetPort;
+            if (parseInt(rightConcatNode.hwMeta.maxId) < parseInt(oldTargetPortId.id)) {
+                rightConcatNode.hwMeta.maxId = oldTargetPort.id;
+            }
         } else {
             //insert another input after current port
             rightConcatNode.ports.splice(newTargetPortIndex + i, 0, oldTargetPort)
+            if (parseInt(rightConcatNode.hwMeta.maxId) < parseInt(oldTargetPortId.id)) {
+                rightConcatNode.hwMeta.maxId = oldTargetPort.id;
+            }
         }
         ++i;
     }
@@ -173,6 +179,9 @@ function fillConcats(children) {
 function aggregateTwoSplits(innitialNode, oldNode, portIdToEdgeDict) {
     let oldNodePort = oldNode.ports[1];
     innitialNode.ports.push(oldNodePort);
+    if (parseInt(innitialNode.hwMeta.maxId) < parseInt(oldNodePort.id)) {
+        innitialNode.hwMeta.maxId = oldNodePort.id;
+    }
     let edgeOnSplitOutput = portIdToEdgeDict[oldNodePort.id];
     edgeOnSplitOutput.sources[0][0] = innitialNode.id;
     oldNode.ports = [];

@@ -20,8 +20,40 @@ import {setPortHierarchy} from "./yosysPortHierarchy.js";
 
 import {aggregateHierarchicalPortEdges} from "./hierarchicalPortEdges.js";
 
+function assertBuilderIdCounterBefore(parentBuilder, childBuilder){
+    if (childBuilder === undefined) {
+        return;
+    }
+    if (parseInt(parentBuilder.idCounter) > parseInt(childBuilder.idCounter)) {
+        throw new Error("ParentBuilderIdCounter is bigger than childBuilderIdCounter (before)");
+    }
+
+}
+
+function assertBuilderIdCounterAfter(parentBuilder, childBuilder){
+    if (childBuilder === undefined) {
+        return;
+    }
+    if (parseInt(parentBuilder.idCounter) < parseInt(childBuilder.idCounter)) {
+        throw new Error("ParentBuilderIdCounter is smaller than childBuilderIdCounter (after)");
+    }
+
+}
+/**
+ * :ivar name: name of the node represented by LNodeMaker
+ * :ivar yosysModule: module from which the node if built
+ * :ivar idCounter: counter used to calculate a unique id of an object
+ * :ivar yosysModules: all modules from yosys, used to generating children of the node
+ * :ivar hierarchyLevel: specifies the depth of a node in a hierarchical node
+ * :ivar nodePortNames: dictionary, which translates node ids to portByName
+ * :ivar childrenWithoutPortArray: array, which stores tuples of cell objects and nodes,
+ *                                 which do not have a port_directions attribute
+ * :ivar nodeIdToCell: dictionary, which translates a node id to its corresponding cell object
+ * :ivar nodeIdToBuilder: dictionary, which translates node id to its builder
+ * :ivar portSuffixesAreEqual: function to compare two suffixes of a port name, it is used in allPortsAreConnected
+* */
 class LNodeMaker {
-    constructor(name, yosysModule, idCounter, yosysModules, hierarchyLevel, nodePortNames) {
+    constructor(name, yosysModule, idCounter, yosysModules, hierarchyLevel, nodePortNames, portSuffixesAreEqual) {
         this.name = name;
         this.yosysModule = yosysModule;
         this.idCounter = idCounter;
@@ -31,6 +63,7 @@ class LNodeMaker {
         this.childrenWithoutPortArray = [];
         this.nodeIdToCell = {};
         this.nodeIdToBuilder = {};
+        this.portSuffixesAreEqual = portSuffixesAreEqual;
     }
 
     make() {
@@ -51,8 +84,6 @@ class LNodeMaker {
             if (node.children !== undefined && node.children.length > 0) {
                 aggregateConcantsAndSplits(node);
             }
-
-
         }
         if (node.children !== undefined) {
             for (let child of node.children) {
@@ -64,7 +95,24 @@ class LNodeMaker {
                 if (child.hwMeta.cls !== "Operator") {
                     setPortHierarchy(this, child, this.nodePortNames[child.id]);
                 }
-                aggregateHierarchicalPortEdges(this.nodeIdToBuilder[child.id], child);
+
+                let childBuilder = this.nodeIdToBuilder[child.id];
+                if (childBuilder) {
+                    childBuilder.idCounter = this.idCounter;
+                    this.idCounter = undefined;
+                }
+
+                //assertBuilderIdCounterBefore(this, this.nodeIdToBuilder[child.id])
+                aggregateHierarchicalPortEdges(this.nodeIdToBuilder[child.id], child, this.portSuffixesAreEqual);
+
+                if (childBuilder) {
+                    if (parseInt(child.hwMeta.maxId) < childBuilder.idCounter) {
+                        //child.hwMeta.maxId = childBuilder.idCounter;
+                    }
+                    this.idCounter = childBuilder.idCounter;
+                    childBuilder.idCounter = undefined;
+                }
+                //assertBuilderIdCounterAfter(this, this.nodeIdToBuilder[child.id])
             }
         }
 
@@ -128,7 +176,7 @@ class LNodeMaker {
                 }
             }
             let direction = getPortDirectionFn(portObj);
-            this.makeLPort(node.ports, portByName, originalPortName, portName, direction, node.hwMeta.name);
+            this.makeLPort(node.ports, portByName, originalPortName, portName, direction, node.hwMeta.name, node);
         }
         if (isConcat) {
             node.ports = node.ports.reverse();
@@ -136,7 +184,7 @@ class LNodeMaker {
         }
     }
 
-    makeLPort(portList, portByName, originalName, name, direction, nodeName) {
+    makeLPort(portList, portByName, originalName, name, direction, nodeName, node) {
         if (name === undefined) {
             throw new Error("Name is undefined");
         }
@@ -159,6 +207,7 @@ class LNodeMaker {
         portList.push(port);
         portByName[originalName] = port;
         ++this.idCounter;
+        node.hwMeta.maxId = this.idCounter - 1;
         return port;
     }
 
@@ -168,7 +217,7 @@ class LNodeMaker {
             let moduleName = cellObj.type; //module name
             let cellModuleObj = this.yosysModules[moduleName];
             let nodeBuilder = new LNodeMaker(cellName, cellModuleObj, this.idCounter, this.yosysModules,
-                this.hierarchyLevel + 1, this.nodePortNames);
+                this.hierarchyLevel + 1, this.nodePortNames, this.portSuffixesAreEqual);
             let subNode = nodeBuilder.make();
             this.nodeIdToBuilder[subNode.id] = nodeBuilder;
             this.idCounter = nodeBuilder.idCounter;
@@ -177,9 +226,6 @@ class LNodeMaker {
             this.nodeIdToCell[subNode.id] = cellObj;
             if (cellModuleObj === undefined) {
                 if (cellObj.port_directions === undefined) {
-                    // throw new Error("[Todo] if modules does not have definition in modules and its name does not \
-                    // start with $, then it does not have port_directions. Must add port to sources and targets of an edge")
-
                     this.childrenWithoutPortArray.push([cellObj, subNode]);
                     continue;
                 }
@@ -270,7 +316,7 @@ class LNodeMaker {
                             portByName = {};
                             this.nodePortNames[subNode.id] = portByName;
                         }
-                        port = this.makeLPort(subNode.ports, portByName, portName, portName, direction, subNode.hwMeta.name);
+                        port = this.makeLPort(subNode.ports, portByName, portName, portName, direction, subNode.hwMeta.name, subNode);
                     }
 
                     edgePoints.push([subNode.id, port.id]);
@@ -403,12 +449,12 @@ class LNodeMaker {
         let port;
 
         let nodeBuilder = new LNodeMaker(nodeName, undefined, this.idCounter, null,
-            this.hierarchyLevel + 1, this.nodePortNames);
+            this.hierarchyLevel + 1, this.nodePortNames, this.portSuffixesAreEqual);
         let subNode = nodeBuilder.make();
         this.idCounter = nodeBuilder.idCounter;
 
         let portByName = this.nodePortNames[subNode.id] = {};
-        port = this.makeLPort(subNode.ports, portByName, "O0", "O0", "output", subNode.hwMeta.name);
+        port = this.makeLPort(subNode.ports, portByName, "O0", "O0", "output", subNode.hwMeta.name, subNode);
         node.children.push(subNode);
         constNodeDict[subNode.id] = 1;
 
@@ -418,24 +464,120 @@ class LNodeMaker {
 
 }
 
+function isDuplicit(node, idDict) {
+    if (idDict[node.id] === undefined)
+    {
+        idDict[node.id] = node;
+    } else {
+        throw new Error(("Duplicit id detected: " + node.id + ": " + node.hwMeta.name + " and "  + node.id + ": " + idDict[node.id].hwMeta.name));
+    }
+}
+function detectDuplicitIds(node, idDict) {
+    isDuplicit(node, idDict);
+    let children = node.children || node._children
+    if (children !== undefined) {
+        for (let child of children) {
+            detectDuplicitIds(child, idDict);
+        }
+    }
+    let edges = node.edges || node._edges;
+    if (edges !== undefined) {
+        for (let edge of edges) {
+            detectDuplicitIds(edge, idDict)
+        }
+    }
+
+    let ports = node.ports || node._ports;
+    if (ports !== undefined) {
+        for (let port of ports) {
+            detectDuplicitIds(port, idDict)
+        }
+    }
+}
+
+function checkMaxIdPorts(maxId, port) {
+    if (maxId < parseInt(port.id))
+    {
+        throw new Error("Max ids are not correct (port)");
+    }
+
+    for (let childPort of port.children) {
+        checkMaxIdPorts(maxId, childPort)
+    }
+}
+
+function checkMaxId(node) {
+    let maxId = parseInt(node.hwMeta.maxId);
+    let children = node.children || node._children
+    if (children !== undefined) {
+        for (let child of children) {
+            checkMaxId(child);
+            if (maxId < parseInt(child.id)) {
+                throw new Error("Max ids are not correct (child)");
+            }
+        }
+    }
+
+    if (maxId < parseInt(node.id)) {
+        throw new Error("Max ids are not correct (self)");
+    }
+
+    let edges = node.edges || node._edges;
+    if (edges !== undefined) {
+        for (let edge of edges) {
+            if (maxId < parseInt(edge.id))
+            {
+                throw new Error("Max ids are not correct (edge)");
+            }
+        }
+    }
+
+    let ports = node.ports || node._ports;
+    if (ports !== undefined) {
+        for (let port of ports) {
+            checkMaxIdPorts(maxId, port)
+        }
+    }
+
+
+
+}
 export function yosys(yosysJson) {
+
+    function portSuffixesAreEqual(leftSuffix, rightSuffix) {
+        return leftSuffix === rightSuffix
+    }
+    /*
+    function portSuffixesAreEqual(leftSuffix, rightSuffix) {
+        if ((leftSuffix.endsWith("_i") && rightSuffix.endsWith("_o"))
+            || (leftSuffix.endsWith("_o") && rightSuffix.endsWith("_i"))){
+            leftSuffix = leftSuffix.slice(0, leftSuffix.length  - 2);
+            rightSuffix = rightSuffix.slice(0, rightSuffix.length  - 2)
+        }
+        return leftSuffix === rightSuffix;
+    }
+    */
+
     let nodePortNames = {};
-    let rootNodeBuilder = new LNodeMaker("root", null, 0, null, 0, nodePortNames);
+    let rootNodeBuilder = new LNodeMaker("root", null, 0, null, 0, nodePortNames, portSuffixesAreEqual);
     let output = rootNodeBuilder.make();
     let topModuleName = getTopModuleName(yosysJson);
 
     let nodeBuilder = new LNodeMaker(topModuleName, yosysJson.modules[topModuleName], rootNodeBuilder.idCounter,
-        yosysJson.modules, 1, nodePortNames);
+        yosysJson.modules, 1, nodePortNames, portSuffixesAreEqual);
     let node = nodeBuilder.make();
-    setPortHierarchy(nodeBuilder, node, nodeBuilder.nodePortNames[node.id]);
-    //convertPortOrderingFromYosysToElk(node);
     output.children.push(node);
-    aggregateHierarchicalPortEdges(nodeBuilder, output.children[0]);
 
+    setPortHierarchy(nodeBuilder, node, nodeBuilder.nodePortNames[node.id]);
+    aggregateHierarchicalPortEdges(nodeBuilder, output.children[0], nodeBuilder.portSuffixesAreEqual);
     output.hwMeta.maxId = nodeBuilder.idCounter - 1;
-    //yosysTranslateIcons(output);
+
     //print output to console
     //console.log(JSON.stringify(output, null, 2));
 
+    //detectDuplicitIds(node, {});
+    //console.log("[SUCCESS] detectDuplicitIds: no duplicit ids were found");
+
+    //checkMaxId(node);
     return output;
 }

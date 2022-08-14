@@ -17,7 +17,7 @@
       "hwMeta": {
         "name": "moduleWithHierarchicalOutput0",
         "cls": "",
-        "maxId": 21
+        "maxId": "23"
       },
       "properties": {
         "org.eclipse.elk.portConstraints": "FIXED_ORDER",
@@ -100,7 +100,7 @@
           "hwMeta": {
             "name": "b",
             "cls": "",
-            "maxId": 17
+            "maxId": 21
           },
           "properties": {
             "org.eclipse.elk.portConstraints": "FIXED_ORDER",
@@ -163,7 +163,7 @@
               "hwMeta": {
                 "name": "0x0",
                 "cls": "",
-                "maxId": 10
+                "maxId": 11
               },
               "properties": {
                 "org.eclipse.elk.portConstraints": "FIXED_ORDER",
@@ -189,7 +189,7 @@
               "hwMeta": {
                 "name": "0x0",
                 "cls": "",
-                "maxId": 13
+                "maxId": 14
               },
               "properties": {
                 "org.eclipse.elk.portConstraints": "FIXED_ORDER",
@@ -215,7 +215,7 @@
               "hwMeta": {
                 "name": "0x0",
                 "cls": "",
-                "maxId": 16
+                "maxId": 17
               },
               "properties": {
                 "org.eclipse.elk.portConstraints": "FIXED_ORDER",

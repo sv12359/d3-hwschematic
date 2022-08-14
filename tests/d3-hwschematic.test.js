@@ -113,7 +113,7 @@ describe("Testing yosys", () => {
         "split3", "split4", "split5", "split6", "split7", "constPortDriver", "dff_sync_reset",
         "fifo", "latchinf", "concat0", "concat1", "concat2", "fulladder_4bit", "moduleWithHierarchicalOutput0",
         "moduleWithHierarchicalOutput1", "moduleWithHierarchicalOutput2", "moduleWithHierarchicalOutput3",
-        "moduleWithHierarchicalOutput4", "moduleWithHierarchicalOutput5"];
+        "moduleWithHierarchicalOutput4", "moduleWithHierarchicalOutput5", "moduleWithHierarchicalOutput6"];
 
     for (const testFile of testFiles) {
         it("Testing file: " + testFile, () => {

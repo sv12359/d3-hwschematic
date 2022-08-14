@@ -1,0 +1,1065 @@
+{
+  "id": "0",
+  "hwMeta": {
+    "name": "root",
+    "cls": "",
+    "maxId": 109
+  },
+  "properties": {
+    "org.eclipse.elk.portConstraints": "FIXED_ORDER",
+    "org.eclipse.elk.layered.mergeEdges": 1
+  },
+  "ports": [],
+  "edges": [],
+  "children": [
+    {
+      "id": "1",
+      "hwMeta": {
+        "name": "moduleWithHierarchicalOutput6",
+        "cls": "",
+        "maxId": "109"
+      },
+      "properties": {
+        "org.eclipse.elk.portConstraints": "FIXED_ORDER",
+        "org.eclipse.elk.layered.mergeEdges": 1
+      },
+      "ports": [
+        {
+          "id": "96",
+          "hwMeta": {
+            "name": "B"
+          },
+          "direction": "OUTPUT",
+          "properties": {
+            "side": "EAST",
+            "index": 0
+          },
+          "children": [
+            {
+              "id": "97",
+              "hwMeta": {
+                "name": "B_0"
+              },
+              "direction": "OUTPUT",
+              "properties": {
+                "side": "EAST",
+                "index": 1
+              },
+              "children": [
+                {
+                  "id": "5",
+                  "hwMeta": {
+                    "name": "B_0_0"
+                  },
+                  "direction": "OUTPUT",
+                  "properties": {
+                    "side": "EAST",
+                    "index": 2
+                  },
+                  "children": []
+                },
+                {
+                  "id": "6",
+                  "hwMeta": {
+                    "name": "B_0_1"
+                  },
+                  "direction": "OUTPUT",
+                  "properties": {
+                    "side": "EAST",
+                    "index": 3
+                  },
+                  "children": []
+                },
+                {
+                  "id": "7",
+                  "hwMeta": {
+                    "name": "B_0_2"
+                  },
+                  "direction": "OUTPUT",
+                  "properties": {
+                    "side": "EAST",
+                    "index": 4
+                  },
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "100",
+          "hwMeta": {
+            "name": "D"
+          },
+          "direction": "OUTPUT",
+          "properties": {
+            "side": "EAST",
+            "index": 5
+          },
+          "children": [
+            {
+              "id": "101",
+              "hwMeta": {
+                "name": "D_0"
+              },
+              "direction": "OUTPUT",
+              "properties": {
+                "side": "EAST",
+                "index": 6
+              },
+              "children": [
+                {
+                  "id": "11",
+                  "hwMeta": {
+                    "name": "D_0_0"
+                  },
+                  "direction": "OUTPUT",
+                  "properties": {
+                    "side": "EAST",
+                    "index": 7
+                  },
+                  "children": []
+                },
+                {
+                  "id": "12",
+                  "hwMeta": {
+                    "name": "D_0_1"
+                  },
+                  "direction": "OUTPUT",
+                  "properties": {
+                    "side": "EAST",
+                    "index": 8
+                  },
+                  "children": []
+                },
+                {
+                  "id": "13",
+                  "hwMeta": {
+                    "name": "D_0_2"
+                  },
+                  "direction": "OUTPUT",
+                  "properties": {
+                    "side": "EAST",
+                    "index": 9
+                  },
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "98",
+          "hwMeta": {
+            "name": "C"
+          },
+          "direction": "INPUT",
+          "properties": {
+            "side": "WEST",
+            "index": 14
+          },
+          "children": [
+            {
+              "id": "99",
+              "hwMeta": {
+                "name": "C_0"
+              },
+              "direction": "INPUT",
+              "properties": {
+                "side": "WEST",
+                "index": 13
+              },
+              "children": [
+                {
+                  "id": "8",
+                  "hwMeta": {
+                    "name": "C_0_0"
+                  },
+                  "direction": "INPUT",
+                  "properties": {
+                    "side": "WEST",
+                    "index": 10
+                  },
+                  "children": []
+                },
+                {
+                  "id": "9",
+                  "hwMeta": {
+                    "name": "C_0_1"
+                  },
+                  "direction": "INPUT",
+                  "properties": {
+                    "side": "WEST",
+                    "index": 11
+                  },
+                  "children": []
+                },
+                {
+                  "id": "10",
+                  "hwMeta": {
+                    "name": "C_0_2"
+                  },
+                  "direction": "INPUT",
+                  "properties": {
+                    "side": "WEST",
+                    "index": 12
+                  },
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "94",
+          "hwMeta": {
+            "name": "A"
+          },
+          "direction": "INPUT",
+          "properties": {
+            "side": "WEST",
+            "index": 19
+          },
+          "children": [
+            {
+              "id": "95",
+              "hwMeta": {
+                "name": "A_0"
+              },
+              "direction": "INPUT",
+              "properties": {
+                "side": "WEST",
+                "index": 18
+              },
+              "children": [
+                {
+                  "id": "2",
+                  "hwMeta": {
+                    "name": "A_0_0"
+                  },
+                  "direction": "INPUT",
+                  "properties": {
+                    "side": "WEST",
+                    "index": 15
+                  },
+                  "children": []
+                },
+                {
+                  "id": "3",
+                  "hwMeta": {
+                    "name": "A_0_1"
+                  },
+                  "direction": "INPUT",
+                  "properties": {
+                    "side": "WEST",
+                    "index": 16
+                  },
+                  "children": []
+                },
+                {
+                  "id": "4",
+                  "hwMeta": {
+                    "name": "A_0_2"
+                  },
+                  "direction": "INPUT",
+                  "properties": {
+                    "side": "WEST",
+                    "index": 17
+                  },
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "id": "103",
+          "sources": [
+            [
+              "1",
+              "96"
+            ]
+          ],
+          "targets": [
+            [
+              "14",
+              "80"
+            ]
+          ],
+          "hwMeta": {
+            "name": "B"
+          }
+        },
+        {
+          "id": "105",
+          "sources": [
+            [
+              "1",
+              "100"
+            ]
+          ],
+          "targets": [
+            [
+              "14",
+              "84"
+            ]
+          ],
+          "hwMeta": {
+            "name": "D"
+          }
+        },
+        {
+          "id": "107",
+          "sources": [
+            [
+              "14",
+              "82"
+            ]
+          ],
+          "targets": [
+            [
+              "1",
+              "98"
+            ]
+          ],
+          "hwMeta": {
+            "name": "C"
+          }
+        },
+        {
+          "id": "109",
+          "sources": [
+            [
+              "14",
+              "78"
+            ]
+          ],
+          "targets": [
+            [
+              "1",
+              "94"
+            ]
+          ],
+          "hwMeta": {
+            "name": "A"
+          }
+        }
+      ],
+      "children": [
+        {
+          "id": "14",
+          "hwMeta": {
+            "name": "u0",
+            "cls": "",
+            "maxId": "93"
+          },
+          "properties": {
+            "org.eclipse.elk.portConstraints": "FIXED_ORDER",
+            "org.eclipse.elk.layered.mergeEdges": 1
+          },
+          "ports": [
+            {
+              "id": "80",
+              "hwMeta": {
+                "name": "B"
+              },
+              "direction": "OUTPUT",
+              "properties": {
+                "side": "EAST",
+                "index": 0
+              },
+              "children": [
+                {
+                  "id": "81",
+                  "hwMeta": {
+                    "name": "B_0"
+                  },
+                  "direction": "OUTPUT",
+                  "properties": {
+                    "side": "EAST",
+                    "index": 1
+                  },
+                  "children": [
+                    {
+                      "id": "18",
+                      "hwMeta": {
+                        "name": "B_0_0"
+                      },
+                      "direction": "OUTPUT",
+                      "properties": {
+                        "side": "EAST",
+                        "index": 2
+                      },
+                      "children": []
+                    },
+                    {
+                      "id": "19",
+                      "hwMeta": {
+                        "name": "B_0_1"
+                      },
+                      "direction": "OUTPUT",
+                      "properties": {
+                        "side": "EAST",
+                        "index": 3
+                      },
+                      "children": []
+                    },
+                    {
+                      "id": "20",
+                      "hwMeta": {
+                        "name": "B_0_2"
+                      },
+                      "direction": "OUTPUT",
+                      "properties": {
+                        "side": "EAST",
+                        "index": 4
+                      },
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "84",
+              "hwMeta": {
+                "name": "D"
+              },
+              "direction": "OUTPUT",
+              "properties": {
+                "side": "EAST",
+                "index": 5
+              },
+              "children": [
+                {
+                  "id": "85",
+                  "hwMeta": {
+                    "name": "D_0"
+                  },
+                  "direction": "OUTPUT",
+                  "properties": {
+                    "side": "EAST",
+                    "index": 6
+                  },
+                  "children": [
+                    {
+                      "id": "24",
+                      "hwMeta": {
+                        "name": "D_0_0"
+                      },
+                      "direction": "OUTPUT",
+                      "properties": {
+                        "side": "EAST",
+                        "index": 7
+                      },
+                      "children": []
+                    },
+                    {
+                      "id": "25",
+                      "hwMeta": {
+                        "name": "D_0_1"
+                      },
+                      "direction": "OUTPUT",
+                      "properties": {
+                        "side": "EAST",
+                        "index": 8
+                      },
+                      "children": []
+                    },
+                    {
+                      "id": "26",
+                      "hwMeta": {
+                        "name": "D_0_2"
+                      },
+                      "direction": "OUTPUT",
+                      "properties": {
+                        "side": "EAST",
+                        "index": 9
+                      },
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "82",
+              "hwMeta": {
+                "name": "C"
+              },
+              "direction": "INPUT",
+              "properties": {
+                "side": "WEST",
+                "index": 14
+              },
+              "children": [
+                {
+                  "id": "83",
+                  "hwMeta": {
+                    "name": "C_0"
+                  },
+                  "direction": "INPUT",
+                  "properties": {
+                    "side": "WEST",
+                    "index": 13
+                  },
+                  "children": [
+                    {
+                      "id": "21",
+                      "hwMeta": {
+                        "name": "C_0_0"
+                      },
+                      "direction": "INPUT",
+                      "properties": {
+                        "side": "WEST",
+                        "index": 10
+                      },
+                      "children": []
+                    },
+                    {
+                      "id": "22",
+                      "hwMeta": {
+                        "name": "C_0_1"
+                      },
+                      "direction": "INPUT",
+                      "properties": {
+                        "side": "WEST",
+                        "index": 11
+                      },
+                      "children": []
+                    },
+                    {
+                      "id": "23",
+                      "hwMeta": {
+                        "name": "C_0_2"
+                      },
+                      "direction": "INPUT",
+                      "properties": {
+                        "side": "WEST",
+                        "index": 12
+                      },
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "78",
+              "hwMeta": {
+                "name": "A"
+              },
+              "direction": "INPUT",
+              "properties": {
+                "side": "WEST",
+                "index": 19
+              },
+              "children": [
+                {
+                  "id": "79",
+                  "hwMeta": {
+                    "name": "A_0"
+                  },
+                  "direction": "INPUT",
+                  "properties": {
+                    "side": "WEST",
+                    "index": 18
+                  },
+                  "children": [
+                    {
+                      "id": "15",
+                      "hwMeta": {
+                        "name": "A_0_0"
+                      },
+                      "direction": "INPUT",
+                      "properties": {
+                        "side": "WEST",
+                        "index": 15
+                      },
+                      "children": []
+                    },
+                    {
+                      "id": "16",
+                      "hwMeta": {
+                        "name": "A_0_1"
+                      },
+                      "direction": "INPUT",
+                      "properties": {
+                        "side": "WEST",
+                        "index": 16
+                      },
+                      "children": []
+                    },
+                    {
+                      "id": "17",
+                      "hwMeta": {
+                        "name": "A_0_2"
+                      },
+                      "direction": "INPUT",
+                      "properties": {
+                        "side": "WEST",
+                        "index": 17
+                      },
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "_children": [
+            {
+              "id": "27",
+              "hwMeta": {
+                "name": "u1",
+                "cls": "",
+                "maxId": 65
+              },
+              "properties": {
+                "org.eclipse.elk.portConstraints": "FIXED_ORDER",
+                "org.eclipse.elk.layered.mergeEdges": 1
+              },
+              "ports": [
+                {
+                  "id": "60",
+                  "hwMeta": {
+                    "name": "B"
+                  },
+                  "direction": "OUTPUT",
+                  "properties": {
+                    "side": "EAST",
+                    "index": 0
+                  },
+                  "children": [
+                    {
+                      "id": "61",
+                      "hwMeta": {
+                        "name": "B_0"
+                      },
+                      "direction": "OUTPUT",
+                      "properties": {
+                        "side": "EAST",
+                        "index": 1
+                      },
+                      "children": [
+                        {
+                          "id": "31",
+                          "hwMeta": {
+                            "name": "B_0_0"
+                          },
+                          "direction": "OUTPUT",
+                          "properties": {
+                            "side": "EAST",
+                            "index": 2
+                          },
+                          "children": []
+                        },
+                        {
+                          "id": "32",
+                          "hwMeta": {
+                            "name": "B_0_1"
+                          },
+                          "direction": "OUTPUT",
+                          "properties": {
+                            "side": "EAST",
+                            "index": 3
+                          },
+                          "children": []
+                        },
+                        {
+                          "id": "33",
+                          "hwMeta": {
+                            "name": "B_0_2"
+                          },
+                          "direction": "OUTPUT",
+                          "properties": {
+                            "side": "EAST",
+                            "index": 4
+                          },
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "id": "64",
+                  "hwMeta": {
+                    "name": "D"
+                  },
+                  "direction": "OUTPUT",
+                  "properties": {
+                    "side": "EAST",
+                    "index": 5
+                  },
+                  "children": [
+                    {
+                      "id": "65",
+                      "hwMeta": {
+                        "name": "D_0"
+                      },
+                      "direction": "OUTPUT",
+                      "properties": {
+                        "side": "EAST",
+                        "index": 6
+                      },
+                      "children": [
+                        {
+                          "id": "37",
+                          "hwMeta": {
+                            "name": "D_0_0"
+                          },
+                          "direction": "OUTPUT",
+                          "properties": {
+                            "side": "EAST",
+                            "index": 7
+                          },
+                          "children": []
+                        },
+                        {
+                          "id": "38",
+                          "hwMeta": {
+                            "name": "D_0_1"
+                          },
+                          "direction": "OUTPUT",
+                          "properties": {
+                            "side": "EAST",
+                            "index": 8
+                          },
+                          "children": []
+                        },
+                        {
+                          "id": "39",
+                          "hwMeta": {
+                            "name": "D_0_2"
+                          },
+                          "direction": "OUTPUT",
+                          "properties": {
+                            "side": "EAST",
+                            "index": 9
+                          },
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "id": "62",
+                  "hwMeta": {
+                    "name": "C"
+                  },
+                  "direction": "INPUT",
+                  "properties": {
+                    "side": "WEST",
+                    "index": 14
+                  },
+                  "children": [
+                    {
+                      "id": "63",
+                      "hwMeta": {
+                        "name": "C_0"
+                      },
+                      "direction": "INPUT",
+                      "properties": {
+                        "side": "WEST",
+                        "index": 13
+                      },
+                      "children": [
+                        {
+                          "id": "34",
+                          "hwMeta": {
+                            "name": "C_0_0"
+                          },
+                          "direction": "INPUT",
+                          "properties": {
+                            "side": "WEST",
+                            "index": 10
+                          },
+                          "children": []
+                        },
+                        {
+                          "id": "35",
+                          "hwMeta": {
+                            "name": "C_0_1"
+                          },
+                          "direction": "INPUT",
+                          "properties": {
+                            "side": "WEST",
+                            "index": 11
+                          },
+                          "children": []
+                        },
+                        {
+                          "id": "36",
+                          "hwMeta": {
+                            "name": "C_0_2"
+                          },
+                          "direction": "INPUT",
+                          "properties": {
+                            "side": "WEST",
+                            "index": 12
+                          },
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "id": "58",
+                  "hwMeta": {
+                    "name": "A"
+                  },
+                  "direction": "INPUT",
+                  "properties": {
+                    "side": "WEST",
+                    "index": 19
+                  },
+                  "children": [
+                    {
+                      "id": "59",
+                      "hwMeta": {
+                        "name": "A_0"
+                      },
+                      "direction": "INPUT",
+                      "properties": {
+                        "side": "WEST",
+                        "index": 18
+                      },
+                      "children": [
+                        {
+                          "id": "28",
+                          "hwMeta": {
+                            "name": "A_0_0"
+                          },
+                          "direction": "INPUT",
+                          "properties": {
+                            "side": "WEST",
+                            "index": 15
+                          },
+                          "children": []
+                        },
+                        {
+                          "id": "29",
+                          "hwMeta": {
+                            "name": "A_0_1"
+                          },
+                          "direction": "INPUT",
+                          "properties": {
+                            "side": "WEST",
+                            "index": 16
+                          },
+                          "children": []
+                        },
+                        {
+                          "id": "30",
+                          "hwMeta": {
+                            "name": "A_0_2"
+                          },
+                          "direction": "INPUT",
+                          "properties": {
+                            "side": "WEST",
+                            "index": 17
+                          },
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "_children": [],
+              "_edges": [
+                {
+                  "id": "40",
+                  "sources": [
+                    [
+                      "27",
+                      "28"
+                    ]
+                  ],
+                  "targets": [
+                    [
+                      "27",
+                      "31"
+                    ]
+                  ],
+                  "hwMeta": {
+                    "name": "A_0_0"
+                  }
+                },
+                {
+                  "id": "41",
+                  "sources": [
+                    [
+                      "27",
+                      "29"
+                    ]
+                  ],
+                  "targets": [
+                    [
+                      "27",
+                      "32"
+                    ]
+                  ],
+                  "hwMeta": {
+                    "name": "A_0_1"
+                  }
+                },
+                {
+                  "id": "42",
+                  "sources": [
+                    [
+                      "27",
+                      "30"
+                    ]
+                  ],
+                  "targets": [
+                    [
+                      "27",
+                      "33"
+                    ]
+                  ],
+                  "hwMeta": {
+                    "name": "A_0_2"
+                  }
+                },
+                {
+                  "id": "43",
+                  "sources": [
+                    [
+                      "27",
+                      "34"
+                    ]
+                  ],
+                  "targets": [
+                    [
+                      "27",
+                      "37"
+                    ]
+                  ],
+                  "hwMeta": {
+                    "name": "C_0_0"
+                  }
+                },
+                {
+                  "id": "44",
+                  "sources": [
+                    [
+                      "27",
+                      "35"
+                    ]
+                  ],
+                  "targets": [
+                    [
+                      "27",
+                      "38"
+                    ]
+                  ],
+                  "hwMeta": {
+                    "name": "C_0_1"
+                  }
+                },
+                {
+                  "id": "45",
+                  "sources": [
+                    [
+                      "27",
+                      "36"
+                    ]
+                  ],
+                  "targets": [
+                    [
+                      "27",
+                      "39"
+                    ]
+                  ],
+                  "hwMeta": {
+                    "name": "C_0_2"
+                  }
+                }
+              ]
+            }
+          ],
+          "_edges": [
+            {
+              "id": "87",
+              "sources": [
+                [
+                  "14",
+                  "80"
+                ]
+              ],
+              "targets": [
+                [
+                  "27",
+                  "60"
+                ]
+              ],
+              "hwMeta": {
+                "name": "B"
+              }
+            },
+            {
+              "id": "89",
+              "sources": [
+                [
+                  "14",
+                  "84"
+                ]
+              ],
+              "targets": [
+                [
+                  "27",
+                  "64"
+                ]
+              ],
+              "hwMeta": {
+                "name": "D"
+              }
+            },
+            {
+              "id": "91",
+              "sources": [
+                [
+                  "27",
+                  "62"
+                ]
+              ],
+              "targets": [
+                [
+                  "14",
+                  "82"
+                ]
+              ],
+              "hwMeta": {
+                "name": "C"
+              }
+            },
+            {
+              "id": "93",
+              "sources": [
+                [
+                  "27",
+                  "58"
+                ]
+              ],
+              "targets": [
+                [
+                  "14",
+                  "78"
+                ]
+              ],
+              "hwMeta": {
+                "name": "A"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -9,7 +9,7 @@ function createPortHierarchy(nodeBuilder, node, portsAggregatedByPrefix, newPort
         // add header of a port group if required
         let direction = portsAggregatedByPrefix.getMajorityDirection().toLowerCase();
         let portGroupHeaderPort = nodeBuilder.makeLPort(newPortList, portByName,
-            portsAggregatedByPrefix.namePrefix, portsAggregatedByPrefix.namePrefix, direction, node.name);
+            portsAggregatedByPrefix.namePrefix, portsAggregatedByPrefix.namePrefix, direction, node.name, node);
         newPortList = portGroupHeaderPort.children;
     }
     for (let port of portsAggregatedByPrefix.children) {
@@ -190,7 +190,6 @@ function setPortSides(ports) {
 }
 
 export function setPortHierarchy(nodeBuilder, node, portByName) {
-
     if (node.ports.length > 1) {
         let portsAggregatedByPrefix = getPortStartNameToPorts(node.ports);
         let newPortList = [];
