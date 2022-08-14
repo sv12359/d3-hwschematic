@@ -286,8 +286,31 @@ export default class HwSchematic {
         linkWrap.on("click", onLinkClick);
     }
 
-    static fromYosys(yosysJson) {
-        return yosys(yosysJson);
+    /**
+     * :param portSuffixesAreEqual: A function used to compare portname suffixes when aggregating edges. For example
+     *                              fromYosysPortSuffixesAreEqual or fromYosysPortSuffixesAreEqualIOSuffixIgnore
+     *                              functions can be used as this parameter
+     * :param maxHierarchyLevel: undefined - all hierarchy levels included,
+     *                           0 - an empty graph
+     *                           1 - only a single node
+     *                           2 - top node and its direct children
+     * */
+    static fromYosys(yosysJson, maxHierarchyLevel, portSuffixesAreEqual) {
+        if (typeof  portSuffixesAreEqual === "undefined"){
+            portSuffixesAreEqual = HwSchematic.fromYosysPortSuffixesAreEqual;
+        }
+        return yosys(yosysJson, maxHierarchyLevel, portSuffixesAreEqual);
+    }
+    static fromYosysPortSuffixesAreEqual(leftSuffix, rightSuffix) {
+        return leftSuffix === rightSuffix
+    }
+    static fromYosysPortSuffixesAreEqualIOSuffixIgnore(leftSuffix, rightSuffix) {
+        if ((leftSuffix.endsWith("_i") && rightSuffix.endsWith("_o"))
+            || (leftSuffix.endsWith("_o") && rightSuffix.endsWith("_i"))){
+            leftSuffix = leftSuffix.slice(0, leftSuffix.length  - 2);
+            rightSuffix = rightSuffix.slice(0, rightSuffix.length  - 2)
+        }
+        return leftSuffix === rightSuffix;
     }
 
     terminate() {

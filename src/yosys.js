@@ -15,9 +15,7 @@ import {
 } from "./yosysUtills.js";
 
 import {aggregateConcantsAndSplits} from "./yosysConcatAndSplitAggregation.js";
-
 import {setPortHierarchy} from "./yosysPortHierarchy.js";
-
 import {aggregateHierarchicalPortEdges} from "./hierarchicalPortEdges.js";
 
 
@@ -48,7 +46,7 @@ class LNodeMaker {
         this.portSuffixesAreEqual = portSuffixesAreEqual;
     }
 
-    make() {
+    make(hierarchyLevelLimit) {
         if (this.name === undefined) {
             throw new Error("Name is undefined");
         }
@@ -60,8 +58,10 @@ class LNodeMaker {
             this.fillPorts(node, this.yosysModule.ports, (p) => {
                 return p.direction
             }, undefined);
-            this.fillChildren(node);
-            this.fillEdges(node);
+            if (typeof(hierarchyLevelLimit) === "undefined" || hierarchyLevelLimit > 0) {
+                this.fillChildren(node, hierarchyLevelLimit);
+                this.fillEdges(node);
+            }
 
             if (node.children !== undefined && node.children.length > 0) {
                 aggregateConcantsAndSplits(node);
@@ -77,13 +77,11 @@ class LNodeMaker {
                 if (child.hwMeta.cls !== "Operator") {
                     setPortHierarchy(this, child, this.nodePortNames[child.id]);
                 }
-
                 let childBuilder = this.nodeIdToBuilder[child.id];
                 if (childBuilder) {
                     childBuilder.idCounter = this.idCounter;
                     this.idCounter = undefined;
                 }
-
                 aggregateHierarchicalPortEdges(this.nodeIdToBuilder[child.id], child, this.portSuffixesAreEqual);
 
                 if (childBuilder) {
@@ -93,11 +91,14 @@ class LNodeMaker {
             }
         }
 
-
-        if (this.hierarchyLevel > 1) {
-            hideChildrenAndNodes(node, this.yosysModule);
+        if (this.yosysModule !== null) { //to skip root
+            if (this.hierarchyLevel > 1) {
+                hideChildrenAndNodes(node);
+            } else if (node.children.length === 0 && node.edges.length === 0) {
+                delete node.children
+                delete node.edges;
+            }
         }
-
         node.hwMeta.maxId = this.idCounter - 1;
         return node;
     }
@@ -188,14 +189,15 @@ class LNodeMaker {
         return port;
     }
 
-    fillChildren(node) {
+    fillChildren(node, hierarchyLevelLimit) {
         // iterate all cells and lookup for modules and construct them recursively
         for (const [cellName, cellObj] of Object.entries(this.yosysModule.cells)) {
             let moduleName = cellObj.type; //module name
             let cellModuleObj = this.yosysModules[moduleName];
             let nodeBuilder = new LNodeMaker(cellName, cellModuleObj, this.idCounter, this.yosysModules,
                 this.hierarchyLevel + 1, this.nodePortNames, this.portSuffixesAreEqual);
-            let subNode = nodeBuilder.make();
+            let hierarchyLevelLimitIsUndef = typeof hierarchyLevelLimit === "undefined";
+            let subNode = nodeBuilder.make(hierarchyLevelLimitIsUndef ? undefined : hierarchyLevelLimit - 1);
             this.nodeIdToBuilder[subNode.id] = nodeBuilder;
             this.idCounter = nodeBuilder.idCounter;
             node.children.push(subNode);
@@ -214,7 +216,6 @@ class LNodeMaker {
     }
 
     fillEdges(node) {
-
         let edgeTargetsDict = {};
         let edgeSourcesDict = {};
         let constNodeDict = {};
@@ -427,7 +428,7 @@ class LNodeMaker {
 
         let nodeBuilder = new LNodeMaker(nodeName, undefined, this.idCounter, null,
             this.hierarchyLevel + 1, this.nodePortNames, this.portSuffixesAreEqual);
-        let subNode = nodeBuilder.make();
+        let subNode = nodeBuilder.make(undefined);
         this.idCounter = nodeBuilder.idCounter;
 
         let portByName = this.nodePortNames[subNode.id] = {};
@@ -437,45 +438,32 @@ class LNodeMaker {
 
         return [subNode, port];
     }
-
-
 }
 
-
-export function yosys(yosysJson) {
-
-    function portSuffixesAreEqual(leftSuffix, rightSuffix) {
-        return leftSuffix === rightSuffix
-    }
-    /*
-    function portSuffixesAreEqual(leftSuffix, rightSuffix) {
-        if ((leftSuffix.endsWith("_i") && rightSuffix.endsWith("_o"))
-            || (leftSuffix.endsWith("_o") && rightSuffix.endsWith("_i"))){
-            leftSuffix = leftSuffix.slice(0, leftSuffix.length  - 2);
-            rightSuffix = rightSuffix.slice(0, rightSuffix.length  - 2)
-        }
-        return leftSuffix === rightSuffix;
-    }
-    */
-
+export function yosys(yosysJson, hierarchyLevelLimit, portSuffixesAreEqual) {
     let nodePortNames = {};
     let rootNodeBuilder = new LNodeMaker("root", null, 0, null, 0, nodePortNames, portSuffixesAreEqual);
-    let output = rootNodeBuilder.make();
-    let topModuleName = getTopModuleName(yosysJson);
+    let hierarchyLevelLimitIsUndef = typeof hierarchyLevelLimit === "undefined";
+    let output = rootNodeBuilder.make(hierarchyLevelLimitIsUndef ? undefined : hierarchyLevelLimit - 1);
+    if (hierarchyLevelLimitIsUndef || hierarchyLevelLimit > 0) {
+        let topModuleName = getTopModuleName(yosysJson);
+        let nodeBuilder = new LNodeMaker(topModuleName,
+            yosysJson.modules[topModuleName],
+            rootNodeBuilder.idCounter,
+            yosysJson.modules,
+            1,
+            nodePortNames,
+            portSuffixesAreEqual);
+        let mainComponentNode = nodeBuilder.make( hierarchyLevelLimitIsUndef ? undefined : hierarchyLevelLimit - 1);
+        output.children.push(mainComponentNode);
+        setPortHierarchy(nodeBuilder, mainComponentNode, nodeBuilder.nodePortNames[mainComponentNode.id]);
+        aggregateHierarchicalPortEdges(nodeBuilder, output.children[0], nodeBuilder.portSuffixesAreEqual);
+        output.hwMeta.maxId = nodeBuilder.idCounter - 1;
 
-    let nodeBuilder = new LNodeMaker(topModuleName, yosysJson.modules[topModuleName], rootNodeBuilder.idCounter,
-        yosysJson.modules, 1, nodePortNames, portSuffixesAreEqual);
-    let node = nodeBuilder.make();
-    output.children.push(node);
-
-    setPortHierarchy(nodeBuilder, node, nodeBuilder.nodePortNames[node.id]);
-    aggregateHierarchicalPortEdges(nodeBuilder, output.children[0], nodeBuilder.portSuffixesAreEqual);
-    output.hwMeta.maxId = nodeBuilder.idCounter - 1;
-
+    } else {
+        output.hwMeta.maxId = rootNodeBuilder.idCounter - 1;
+    }
     //print output to console
     //console.log(JSON.stringify(output, null, 2));
-
-    //detectDuplicitIds(node, {});
-    //checkMaxId(node);
     return output;
 }

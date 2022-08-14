@@ -85,6 +85,9 @@
 </script>
 <script>
     // data loading script
+    function fromYosys(graph) {
+        return d3.HwSchematic.fromYosys(graph, undefined, d3.HwSchematic.fromYosysPortSuffixesAreEqualIOSuffixIgnore);
+    }
 
     // file open handler
     function readSingleFile(e) {
@@ -97,7 +100,7 @@
             let transformation = null;
             // if this function is called for file input yosys, set example dir and transformation
             if (e.target.id === 'file-input-yosys') {
-                transformation = d3.HwSchematic.fromYosys;
+                transformation = fromYosys;
                 exampleDir = "schemes_yosys/";
             }
             setUrlParameterByName("schematic", exampleDir + file.name);
@@ -148,7 +151,7 @@
                         exampleDir = "schemes/";
                     } else if (graph.creator !== undefined && graph.creator.startsWith("Yosys")) {
                         // convert format from yosys
-                        transformation = d3.HwSchematic.fromYosys;
+                        transformation = fromYosys;
                         exampleDir = "schemes_yosys/";
                     } else {
                         throw new Error("Invalid file format");
@@ -191,7 +194,9 @@
         }
 
         let allPaths = []
-        getAllPaths(rootGraph.children[0], "/", allPaths);
+        if (rootGraph.children.length > 0) {
+            getAllPaths(rootGraph.children[0], "/", allPaths);
+        }
         setRootInputPathsOptions(allPaths, rootInputPaths);
     }
 
@@ -275,7 +280,7 @@
                 try {
                     if (schematicName.startsWith("schemes/")) {
                     } else if (schematicName.startsWith("schemes_yosys/")) {
-                        graph = d3.HwSchematic.fromYosys(graph);
+                        graph = fromYosys(graph);
                     } else {
                         throw new Error("Unknown example dir " + schematicName);
                     }

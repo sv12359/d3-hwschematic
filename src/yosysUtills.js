@@ -95,8 +95,7 @@ export function getPortNameSplice(startIndex, width) {
 }
 
 
-export function hideChildrenAndNodes(node, yosysModule) {
-    if (yosysModule !== null) {
+export function hideChildrenAndNodes(node) {
         if (node.children.length === 0 && node.edges.length === 0) {
             delete node.children
             delete node.edges;
@@ -107,7 +106,6 @@ export function hideChildrenAndNodes(node, yosysModule) {
             node._edges = node.edges;
             delete node.edges;
         }
-    }
 }
 
 
@@ -125,7 +123,6 @@ export function updatePortIndices(ports, index) {
         } else {
             throw new Error("Invalid side" + side)
         }
-
     }
 
     return index;
