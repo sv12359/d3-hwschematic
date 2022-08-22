@@ -1,0 +1,232 @@
+{
+  "id": "0",
+  "hwMeta": {
+    "name": "root",
+    "cls": "",
+    "maxId": 21
+  },
+  "properties": {
+    "org.eclipse.elk.portConstraints": "FIXED_ORDER",
+    "org.eclipse.elk.layered.mergeEdges": 1
+  },
+  "ports": [],
+  "edges": [],
+  "children": [
+    {
+      "id": "1",
+      "hwMeta": {
+        "name": "slice7",
+        "cls": "",
+        "maxId": 21
+      },
+      "properties": {
+        "org.eclipse.elk.portConstraints": "FIXED_ORDER",
+        "org.eclipse.elk.layered.mergeEdges": 1
+      },
+      "ports": [
+        {
+          "id": "3",
+          "hwMeta": {
+            "name": "out0"
+          },
+          "direction": "OUTPUT",
+          "properties": {
+            "side": "EAST",
+            "index": 0
+          },
+          "children": []
+        },
+        {
+          "id": "4",
+          "hwMeta": {
+            "name": "out1"
+          },
+          "direction": "OUTPUT",
+          "properties": {
+            "side": "EAST",
+            "index": 1
+          },
+          "children": []
+        },
+        {
+          "id": "5",
+          "hwMeta": {
+            "name": "out2"
+          },
+          "direction": "OUTPUT",
+          "properties": {
+            "side": "EAST",
+            "index": 2
+          },
+          "children": []
+        },
+        {
+          "id": "6",
+          "hwMeta": {
+            "name": "out3"
+          },
+          "direction": "OUTPUT",
+          "properties": {
+            "side": "EAST",
+            "index": 3
+          },
+          "children": []
+        },
+        {
+          "id": "2",
+          "hwMeta": {
+            "name": "in"
+          },
+          "direction": "INPUT",
+          "properties": {
+            "side": "WEST",
+            "index": 4
+          },
+          "children": []
+        }
+      ],
+      "edges": [
+        {
+          "id": "16",
+          "sources": [
+            [
+              "1",
+              "2"
+            ]
+          ],
+          "targets": [
+            [
+              "1",
+              "6"
+            ],
+            [
+              "7",
+              "8"
+            ]
+          ],
+          "hwMeta": {
+            "name": "in"
+          }
+        },
+        {
+          "id": "19",
+          "sources": [
+            [
+              "7",
+              "9"
+            ]
+          ],
+          "targets": [
+            [
+              "1",
+              "3"
+            ]
+          ],
+          "hwMeta": {
+            "name": "out0"
+          }
+        },
+        {
+          "id": "20",
+          "sources": [
+            [
+              "7",
+              "12"
+            ]
+          ],
+          "targets": [
+            [
+              "1",
+              "4"
+            ]
+          ],
+          "hwMeta": {
+            "name": "out1"
+          }
+        },
+        {
+          "id": "21",
+          "sources": [
+            [
+              "7",
+              "15"
+            ]
+          ],
+          "targets": [
+            [
+              "1",
+              "5"
+            ]
+          ],
+          "hwMeta": {
+            "name": "out2"
+          }
+        }
+      ],
+      "children": [
+        {
+          "id": "7",
+          "hwMeta": {
+            "name": "SLICE",
+            "cls": "Operator",
+            "maxId": 15
+          },
+          "properties": {
+            "org.eclipse.elk.portConstraints": "FIXED_ORDER",
+            "org.eclipse.elk.layered.mergeEdges": 1
+          },
+          "ports": [
+            {
+              "id": "8",
+              "hwMeta": {
+                "name": ""
+              },
+              "direction": "INPUT",
+              "properties": {
+                "side": "WEST",
+                "index": 0
+              },
+              "children": []
+            },
+            {
+              "id": "9",
+              "hwMeta": {
+                "name": "[0]"
+              },
+              "direction": "OUTPUT",
+              "properties": {
+                "side": "EAST",
+                "index": 1
+              },
+              "children": []
+            },
+            {
+              "id": "12",
+              "hwMeta": {
+                "name": "[1]"
+              },
+              "direction": "OUTPUT",
+              "properties": {
+                "side": "EAST",
+                "index": 2
+              },
+              "children": []
+            },
+            {
+              "id": "15",
+              "hwMeta": {
+                "name": "[2]"
+              },
+              "direction": "OUTPUT",
+              "properties": {
+                "side": "EAST",
+                "index": 3
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

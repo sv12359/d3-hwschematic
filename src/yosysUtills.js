@@ -11,7 +11,7 @@ export function getPortSide(portName, direction, nodeName) {
     throw new Error("Unknown direction " + direction);
 }
 
-export function orderClkAndRstPorts(node) {
+function orderPorts(node) {
     let index = 0;
     for (let port of node.ports) {
         let dstIndex = index;
@@ -28,6 +28,13 @@ export function orderClkAndRstPorts(node) {
             port.properties.index = dstIndex;
         }
         ++index;
+    }
+}
+export function orderClkAndRstPorts(children) {
+    for (let child of children) {
+        if (child.hwMeta.cls === "Operator" && child.hwMeta.name.startsWith("FF")) {
+            orderPorts(child);
+        }
     }
 }
 
@@ -166,18 +173,11 @@ export function convertPortOrderingFromYosysToElk(node) {
     updatePortIndices(node.ports, 0);
 }
 
-export function getTopModuleName(yosysJson) {
-    let topModuleName = undefined;
+export function getTopModule(yosysJson) {
     for (const [moduleName, moduleObj] of Object.entries(yosysJson.modules)) {
         if (moduleObj.attributes.top) {
-            topModuleName = moduleName;
-            break;
+            return [moduleName, moduleObj];
         }
     }
-
-    if (topModuleName === undefined) {
-        throw new Error("Cannot find top");
-    }
-
-    return topModuleName;
+    throw new Error("Cannot find top");
 }

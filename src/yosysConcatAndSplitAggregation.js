@@ -72,10 +72,6 @@ function getEdgeTargetsIndex(targets, portId) {
  */
 function aggregateTwoConcats(leftConcatNode, leftConcatInputPorts, rightConcatNode, targetPort, portIdToEdgeDict) {
 
-    if (targetPort.properties.index !== 0) {
-        //throw new Error("Port index is not zero, need to regenerate indices in port labels");
-    }
-
     let newTargetPortIndex = rightConcatNode.ports.indexOf(targetPort);
     if (newTargetPortIndex === undefined) {
         throw new Error("targetPort itself is missing in rightConcatNode")
@@ -134,16 +130,16 @@ function aggregateConcats(node, childrenConcats, portIdToEdgeDict, portIdToPortD
         let targets = edge.targets;
 
         if (targets !== undefined && targets.length === 1) {
-            //we found out that output only leads to a single node from this concatenation
+            // we found out that output only leads to a single node from this concatenation
             let [nodeId, portId] = targets[0];
             let rightConcatNode = nodeIdToNodeDict[nodeId];
             if (rightConcatNode === undefined) {
                 throw new Error("Target node of target port is undefined");
             }
             if (rightConcatNode.hwMeta.cls === "Operator" && rightConcatNode.hwMeta.name === "CONCAT") {
-                //now we know that we should merge these 2 concatenations into 1
+                // now we know that we should merge these 2 concatenations into 1
                 let targetPort = portIdToPortDict[portId];
-                //let targetPort = getTargetPort(leftConcatNode.ports);
+                // let targetPort = getTargetPort(leftConcatNode.ports);
                 let leftConcatInputPorts = getChildInputPorts(leftConcatNode.ports);
                 aggregateTwoConcats(leftConcatNode, leftConcatInputPorts, rightConcatNode, targetPort, portIdToEdgeDict)
                 edgesToDelete.add(edge.id);
@@ -176,15 +172,15 @@ function fillConcats(children) {
 
 }
 
-function aggregateTwoSplits(innitialNode, oldNode, portIdToEdgeDict) {
+function aggregateTwoSlices(innitialNode, oldNode, portIdToEdgeDict) {
     let oldNodePort = oldNode.ports[1];
     innitialNode.ports.push(oldNodePort);
     let oldNodeMaxId = oldNode.hwMeta.maxId;
     if (innitialNode.hwMeta.maxId < oldNodeMaxId) {
         innitialNode.hwMeta.maxId = oldNodeMaxId;
     }
-    let edgeOnSplitOutput = portIdToEdgeDict[oldNodePort.id];
-    edgeOnSplitOutput.sources[0][0] = innitialNode.id;
+    let edgeOnSliceOutput = portIdToEdgeDict[oldNodePort.id];
+    edgeOnSliceOutput.sources[0][0] = innitialNode.id;
     oldNode.ports = [];
 }
 
@@ -211,7 +207,7 @@ function aggregateEdgeTargets(parent, edge, targets, nodeIdToNodeDict, portIdToE
                 innitialNode = node;
             }
             else {
-                aggregateTwoSplits(innitialNode, node, portIdToEdgeDict);
+                aggregateTwoSlices(innitialNode, node, portIdToEdgeDict);
                 nodesToDelete.add(node.id);
             }
         }
@@ -229,7 +225,7 @@ function aggregateEdgeTargets(parent, edge, targets, nodeIdToNodeDict, portIdToE
     });
 }
 
-function aggregateSplits(node, nodeIdToNodeDict, portIdToEdgeDict) {
+function aggregateSlices(node, nodeIdToNodeDict, portIdToEdgeDict) {
     for (let edge of node.edges) {
         if (edge === undefined) {
             throw new Error("Edge is undefined");
@@ -239,11 +235,11 @@ function aggregateSplits(node, nodeIdToNodeDict, portIdToEdgeDict) {
 
     }
 }
-export function aggregateConcantsAndSplits(node) {
+export function aggregateConcatsAndSlices(node) {
     let concats = fillConcats(node.children);
     let portIdToEdgeDict = getPortToEdgeDict(node.edges);
     let portIdToPortDict = getPortIdToPortDict(node);
     let nodeIdToNodeDict = getNodeIdToNodeDict(node);
     aggregateConcats(node, concats, portIdToEdgeDict, portIdToPortDict, nodeIdToNodeDict);
-    aggregateSplits(node, nodeIdToNodeDict, portIdToEdgeDict);
+    aggregateSlices(node, nodeIdToNodeDict, portIdToEdgeDict);
 }

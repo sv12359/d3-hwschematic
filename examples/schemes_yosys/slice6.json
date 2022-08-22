@@ -1,10 +1,10 @@
 {
   "creator": "Yosys 0.9 (git sha1 1979e0b)",
   "modules": {
-    "split7": {
+    "slice6": {
       "attributes": {
         "top": 1,
-        "src": "split7.v:1"
+        "src": "slice6.v:1"
       },
       "ports": {
         "in": {
@@ -22,10 +22,6 @@
         "out2": {
           "direction": "output",
           "bits": [ 7 ]
-        },
-        "out3": {
-          "direction": "output",
-          "bits": [ 2, 3, 4 ]
         }
       },
       "cells": {
@@ -92,21 +88,21 @@
           "hide_name": 1,
           "bits": [ 2 ],
           "attributes": {
-            "src": "split7.v:1"
+            "src": "slice6.v:1"
           }
         },
         "$auto$splice.cc:236:run$8": {
           "hide_name": 1,
           "bits": [ 3 ],
           "attributes": {
-            "src": "split7.v:1"
+            "src": "slice6.v:1"
           }
         },
         "$auto$splice.cc:236:run$9": {
           "hide_name": 1,
           "bits": [ 4 ],
           "attributes": {
-            "src": "split7.v:1"
+            "src": "slice6.v:1"
           }
         },
         "$auto$splice.cc:83:get_sliced_signal$2": {
@@ -131,35 +127,28 @@
           "hide_name": 0,
           "bits": [ 2, 3, 4 ],
           "attributes": {
-            "src": "split7.v:1"
+            "src": "slice6.v:1"
           }
         },
         "out0": {
           "hide_name": 0,
           "bits": [ 5 ],
           "attributes": {
-            "src": "split7.v:1"
+            "src": "slice6.v:1"
           }
         },
         "out1": {
           "hide_name": 0,
           "bits": [ 6 ],
           "attributes": {
-            "src": "split7.v:1"
+            "src": "slice6.v:1"
           }
         },
         "out2": {
           "hide_name": 0,
           "bits": [ 7 ],
           "attributes": {
-            "src": "split7.v:1"
-          }
-        },
-        "out3": {
-          "hide_name": 0,
-          "bits": [ 2, 3, 4 ],
-          "attributes": {
-            "src": "split7.v:1"
+            "src": "slice6.v:1"
           }
         }
       }

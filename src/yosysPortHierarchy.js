@@ -8,8 +8,9 @@ function createPortHierarchy(nodeBuilder, node, portsAggregatedByPrefix, newPort
     if (portsAggregatedByPrefix.namePrefix !== "") {
         // add header of a port group if required
         let direction = portsAggregatedByPrefix.getMajorityDirection().toLowerCase();
-        let portGroupHeaderPort = nodeBuilder.makeLPort(newPortList, portByName,
-            portsAggregatedByPrefix.namePrefix, portsAggregatedByPrefix.namePrefix, direction, node.name, node);
+        let portName = portsAggregatedByPrefix.namePrefix;
+        let portGroupHeaderPort = nodeBuilder.makeLPort(node, portName, portName, direction,
+                                                        newPortList, portByName);
         newPortList = portGroupHeaderPort.children;
     }
     for (let port of portsAggregatedByPrefix.children) {

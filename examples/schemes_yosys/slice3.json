@@ -1,10 +1,10 @@
 {
   "creator": "Yosys 0.9 (git sha1 1979e0b)",
   "modules": {
-    "split2": {
+    "slice3": {
       "attributes": {
         "top": 1,
-        "src": "split2.v:1"
+        "src": "slice3.v:1"
       },
       "ports": {
         "in": {
@@ -18,10 +18,6 @@
         "out1": {
           "direction": "output",
           "bits": [ 14, 15 ]
-        },
-        "out2": {
-          "direction": "output",
-          "bits": [ 16, 17 ]
         }
       },
       "cells": {
@@ -49,7 +45,7 @@
           "type": "$slice",
           "parameters": {
             "A_WIDTH": 8,
-            "OFFSET": 4,
+            "OFFSET": 6,
             "Y_WIDTH": 2
           },
           "attributes": {
@@ -62,47 +58,21 @@
             "A": [ 2, 3, 4, 5, 6, 7, 8, 9 ],
             "Y": [ 14, 15 ]
           }
-        },
-        "$auto$splice.cc:78:get_sliced_signal$5": {
-          "hide_name": 1,
-          "type": "$slice",
-          "parameters": {
-            "A_WIDTH": 8,
-            "OFFSET": 6,
-            "Y_WIDTH": 2
-          },
-          "attributes": {
-          },
-          "port_directions": {
-            "A": "input",
-            "Y": "output"
-          },
-          "connections": {
-            "A": [ 2, 3, 4, 5, 6, 7, 8, 9 ],
-            "Y": [ 16, 17 ]
-          }
         }
       },
       "netnames": {
-        "$auto$splice.cc:236:run$7": {
+        "$auto$splice.cc:236:run$5": {
           "hide_name": 1,
           "bits": [ 2, 3, 4, 5 ],
           "attributes": {
-            "src": "split2.v:1"
+            "src": "slice3.v:1"
           }
         },
-        "$auto$splice.cc:236:run$8": {
-          "hide_name": 1,
-          "bits": [ 6, 7 ],
-          "attributes": {
-            "src": "split2.v:1"
-          }
-        },
-        "$auto$splice.cc:236:run$9": {
+        "$auto$splice.cc:236:run$6": {
           "hide_name": 1,
           "bits": [ 8, 9 ],
           "attributes": {
-            "src": "split2.v:1"
+            "src": "slice3.v:1"
           }
         },
         "$auto$splice.cc:83:get_sliced_signal$2": {
@@ -117,38 +87,25 @@
           "attributes": {
           }
         },
-        "$auto$splice.cc:83:get_sliced_signal$6": {
-          "hide_name": 1,
-          "bits": [ 16, 17 ],
-          "attributes": {
-          }
-        },
         "in": {
           "hide_name": 0,
           "bits": [ 2, 3, 4, 5, 6, 7, 8, 9 ],
           "attributes": {
-            "src": "split2.v:1"
+            "src": "slice3.v:1"
           }
         },
         "out0": {
           "hide_name": 0,
           "bits": [ 10, 11, 12, 13 ],
           "attributes": {
-            "src": "split2.v:1"
+            "src": "slice3.v:1"
           }
         },
         "out1": {
           "hide_name": 0,
           "bits": [ 14, 15 ],
           "attributes": {
-            "src": "split2.v:1"
-          }
-        },
-        "out2": {
-          "hide_name": 0,
-          "bits": [ 16, 17 ],
-          "attributes": {
-            "src": "split2.v:1"
+            "src": "slice3.v:1"
           }
         }
       }

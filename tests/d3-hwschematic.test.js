@@ -106,12 +106,13 @@ test('Testing component expansion', () => {
 });
 
 
+
 describe("Testing yosys", () => {
     let testFiles = ["comparator", "mux2x1", "mux4x2", "constAdder", "subModuleBlackbox",
         "subModuleBlackbox2", "partialConstDriver0", "partialConstDriver1", "partialConstDriver2",
         "partialConstDriver3", "partialConstDriver4", "partialConstDriver5",
-        "partialConstDriver6", "wireModule", "split0", "split1", "split2",
-        "split3", "split4", "split5", "split6", "split7", "constPortDriver", "dff_sync_reset",
+        "partialConstDriver6", "wireModule", "slice0", "slice1", "slice2",
+        "slice3", "slice4", "slice5", "slice6", "slice7", "constPortDriver", "dff_sync_reset",
         "fifo", "latchinf", "concat0", "concat1", "concat2", "fulladder_4bit", "moduleWithHierarchicalOutput0",
         "moduleWithHierarchicalOutput1", "moduleWithHierarchicalOutput2", "moduleWithHierarchicalOutput3",
         "moduleWithHierarchicalOutput4", "moduleWithHierarchicalOutput5", "moduleWithHierarchicalOutput6"];
@@ -124,7 +125,7 @@ describe("Testing yosys", () => {
             detectDuplicitIds(output, {});
             checkMaxId(output);
             let refF = __dirname + "/data/" + testFile + ".json";
-            //fs.writeFileSync(refF, JSON.stringify(output, null, 2)); //create refFiles
+            // fs.writeFileSync(refF, JSON.stringify(output, null, 2)); //create refFiles
             let refGraphData = JSON.parse(fs.readFileSync(refF));
             expect(output).toEqual(refGraphData);
         })

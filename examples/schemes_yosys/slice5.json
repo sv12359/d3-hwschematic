@@ -1,10 +1,10 @@
 {
   "creator": "Yosys 0.9 (git sha1 1979e0b)",
   "modules": {
-    "split5": {
+    "slice5": {
       "attributes": {
         "top": 1,
-        "src": "split5.v:1"
+        "src": "slice5.v:1"
       },
       "ports": {
         "in": {
@@ -65,14 +65,14 @@
           "hide_name": 1,
           "bits": [ 2, 3, 4, 5 ],
           "attributes": {
-            "src": "split5.v:1"
+            "src": "slice5.v:1"
           }
         },
         "$auto$splice.cc:236:run$6": {
           "hide_name": 1,
           "bits": [ 2, 3 ],
           "attributes": {
-            "src": "split5.v:1"
+            "src": "slice5.v:1"
           }
         },
         "$auto$splice.cc:83:get_sliced_signal$2": {
@@ -91,21 +91,21 @@
           "hide_name": 0,
           "bits": [ 2, 3, 4, 5, 6, 7, 8, 9 ],
           "attributes": {
-            "src": "split5.v:1"
+            "src": "slice5.v:1"
           }
         },
         "out0": {
           "hide_name": 0,
           "bits": [ 10, 11, 12, 13 ],
           "attributes": {
-            "src": "split5.v:1"
+            "src": "slice5.v:1"
           }
         },
         "out1": {
           "hide_name": 0,
           "bits": [ 14, 15 ],
           "attributes": {
-            "src": "split5.v:1"
+            "src": "slice5.v:1"
           }
         }
       }
