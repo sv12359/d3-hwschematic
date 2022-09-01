@@ -50,7 +50,7 @@ export function checkMaxId(node) {
     if (children !== undefined) {
         for (let child of children) {
             checkMaxId(child);
-            if (maxId < parseInt(child.id)) {
+            if (maxId < parseInt(child.hwMeta.maxId)) {
                 throw new Error("Max ids are not correct (child)");
             }
         }

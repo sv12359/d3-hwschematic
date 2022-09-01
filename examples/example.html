@@ -84,9 +84,28 @@
 
 </script>
 <script>
+
+
+
+
+
     // data loading script
-    function fromYosys(graph) {
-        return d3.HwSchematic.fromYosys(graph, undefined, d3.HwSchematic.fromYosysPortSuffixesAreEqualIOSuffixIgnore);
+    function fromYosys(yosysJson) {
+        let [rootNode, rootNodeBuilder] = d3.HwSchematic.fromYosys(yosysJson, undefined, d3.HwSchematic.fromYosysPortSuffixesAreEqualIOSuffixIgnore);
+        //d3.HwSchematic.yosysLoadNodeByPath(yosysJson, rootNode, ["moduleWithHierarchicalOutput6",], rootNodeBuilder);
+        //d3.HwSchematic.yosysLoadNodeByPath(yosysJson, rootNode, ["moduleWithHierarchicalOutput6", "u0"], rootNodeBuilder);
+        //d3.HwSchematic.yosysLoadNodeByPath(yosysJson, rootNode, ["moduleWithHierarchicalOutput6", "u0", "u1"], rootNodeBuilder);
+        //console.log("JSON.stringify(rootNode, null, 2)");
+        //console.log(JSON.stringify(rootNode, null, 2));
+
+        //d3.HwSchematic.yosysLoadNodeByPath(yosysJson, rootNode, ["riscv_core"], rootNodeBuilder);
+        //d3.HwSchematic.yosysLoadNodeByPath(yosysJson, rootNode, ["riscv_core", "u_issue"], rootNodeBuilder);
+        //d3.HwSchematic.yosysLoadNodeByPath(yosysJson, rootNode, ["moduleWithHierarchicalOutput6", "u0"], rootNodeBuilder);
+        //d3.HwSchematic.yosysLoadNodeByPath(yosysJson, rootNode, ["moduleWithHierarchicalOutput6", "u0", "u1"], rootNodeBuilder);
+
+        d3.HwSchematic.detectDuplicitIds(rootNode);
+        d3.HwSchematic.checkMaxId(rootNode);
+        return rootNode;
     }
 
     // file open handler
@@ -180,7 +199,9 @@
         if (graph.hwMeta && graph.hwMeta.name)
             document.title = graph.hwMeta.name;
         // load the data and render the elements
-        hwSchematic.bindData(graph).then(() => {
+        let graph_ = JSON.parse(JSON.stringify(graph));
+        //console.log("graph: \n" + graph_);
+        hwSchematic.bindData(graph_).then(() => {
         }, (e) => {
             hwSchematic.setErrorText(e);
             throw e;

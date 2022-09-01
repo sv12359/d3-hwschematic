@@ -7,13 +7,15 @@ import {SliceNodeRenderer} from "./node_renderers/sliceNode";
 import {GenericNodeRenderer} from "./node_renderers/generic";
 import {renderLinks} from "./linkRenderer";
 import {Tooltip} from "./tooltip";
-import {yosys} from "./yosys.js";
+import {elkGetModuleByPath, fromYosys, fromYosysForSingleNodeWithExistingRoot, yosysGetModuleByPath} from "./yosys.js";
 import {
     hyperEdgesToEdges,
     getNet, initNodeParents, expandPorts
 } from "./dataPrepare";
 import {default as d3elk} from "./elk/elk-d3";
 import {selectGraphRootByPath} from "./hierarchySelection.js";
+import {checkMaxId, detectDuplicitIds} from "../tests/objectIdTestFunctions.js";
+
 
 function getNameOfEdge(e) {
     let name = "<tspan>unnamed</tspan>";
@@ -152,12 +154,14 @@ export default class HwSchematic {
             .kgraph(graph);
         return this._draw();
     }
+
     /*
     * @returns subnode selected by path wrapped in a new root
     * */
     static selectGraphRootByPath(graph, path) {
         return selectGraphRootByPath(graph, path);
     }
+
     /*
      * Resolve layout and draw a component graph from layout data
      */
@@ -192,6 +196,11 @@ export default class HwSchematic {
                 }
             );
     }
+    /*
+    setOnNodeClick(callback) {
+
+    }
+    */
 
     /**
      * Draw a component graph from layout data
@@ -206,7 +215,8 @@ export default class HwSchematic {
         this.nodeRenderers.render(root, node);
 
         let _this = this;
-        node.on("click", function (ev, d) {
+
+        function expandNode(ev, d) {
             let [children, nextFocusTarget] = toggleHideChildren(d);
             if (!children || children.length === 0) {
                 return; // does not have anything to expand
@@ -222,7 +232,10 @@ export default class HwSchematic {
                     throw e;
                 }
             );
-        });
+        }
+
+        node.on("click", expandNode);
+        node.on("auxclick", expandNode);
 
         this._applyLayoutLinks();
     }
@@ -296,21 +309,53 @@ export default class HwSchematic {
      *                           2 - top node and its direct children
      * */
     static fromYosys(yosysJson, maxHierarchyLevel, portSuffixesAreEqual) {
-        if (typeof  portSuffixesAreEqual === "undefined"){
+        if (typeof portSuffixesAreEqual === "undefined") {
             portSuffixesAreEqual = HwSchematic.fromYosysPortSuffixesAreEqual;
         }
-        return yosys(yosysJson, maxHierarchyLevel, portSuffixesAreEqual);
+        return fromYosys(yosysJson, maxHierarchyLevel, portSuffixesAreEqual);
     }
+
     static fromYosysPortSuffixesAreEqual(leftSuffix, rightSuffix) {
         return leftSuffix === rightSuffix
     }
+
     static fromYosysPortSuffixesAreEqualIOSuffixIgnore(leftSuffix, rightSuffix) {
         if ((leftSuffix.endsWith("_i") && rightSuffix.endsWith("_o"))
-            || (leftSuffix.endsWith("_o") && rightSuffix.endsWith("_i"))){
-            leftSuffix = leftSuffix.slice(0, leftSuffix.length  - 2);
-            rightSuffix = rightSuffix.slice(0, rightSuffix.length  - 2)
+            || (leftSuffix.endsWith("_o") && rightSuffix.endsWith("_i"))) {
+            leftSuffix = leftSuffix.slice(0, leftSuffix.length - 2);
+            rightSuffix = rightSuffix.slice(0, rightSuffix.length - 2)
         }
         return leftSuffix === rightSuffix;
+    }
+
+    static detectDuplicitIds(rootNode) {
+        return detectDuplicitIds(rootNode, {})
+    }
+
+    static checkMaxId(rootNode) {
+        return checkMaxId(rootNode);
+    }
+    static yosysLoadNodeByPath(yosysJson, rootNode, path, rootNodeBuilder) {
+        let [output, objectPath] = elkGetModuleByPath(rootNode, path);
+        //if (typeof output === "undefined") {
+        //    return;
+        //}
+
+        let [topModuleName, topModuleObj] = yosysGetModuleByPath(yosysJson, path);
+        let nodeBuilder = rootNodeBuilder.nodeIdToBuilder[output.id];
+        if (nodeBuilder === undefined) {
+            throw new Error("Error: nodeBuilder is undefined");
+        }
+        nodeBuilder.idCounter = rootNode.hwMeta.maxId;
+        fromYosysForSingleNodeWithExistingRoot(output, yosysJson, topModuleName, topModuleObj, 1,
+            rootNode.hwMeta.maxId, {}, HwSchematic.fromYosysPortSuffixesAreEqual, rootNodeBuilder.nodeIdToBuilder, nodeBuilder);
+        for (let parentNode of objectPath) {
+            let parentNodeBuilder = rootNodeBuilder.nodeIdToBuilder[parentNode.id];
+            if (typeof parentNodeBuilder === "undefined") {
+                throw new Error("cannot find nodeBuildrer for " + parentNode.id + " " + parentNode.hwMeta.name);
+            }
+            parentNodeBuilder.idCounter = parentNode.hwMeta.maxId = nodeBuilder.idCounter;
+        }
     }
 
     terminate() {

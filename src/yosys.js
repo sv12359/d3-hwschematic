@@ -25,16 +25,16 @@ import {aggregateHierarchicalPortEdges} from "./hierarchicalPortEdges.js";
  * :ivar idCounter: counter used to calculate a unique id of an object
  * :ivar yosysModules: all modules from yosys, used to generating children of the node
  * :ivar hierarchyLevel: specifies the depth of a node in a hierarchical node
- * :ivar nodePortNames: dictionary, which translates node ids to portByName
+ * :ivar nodePortNames: dictionary, which translates node ids to portByName dictionary
  * :ivar childrenWithoutPortArray: array, which stores tuples of cell objects and nodes,
  *                                 which do not have a port_directions attribute
  * :ivar nodeIdToCell: dictionary, which translates a node id to its corresponding cell object
  * :ivar nodeIdToBuilder: dictionary, which translates node id to its builder
  * :ivar portSuffixesAreEqual: function to compare two suffixes of a port name, it is used in allPortsAreConnected
  *                             function
-* */
+ * */
 class LNodeBuilder {
-    constructor(name, yosysModule, idCounter, yosysModules, hierarchyLevel, nodePortNames, portSuffixesAreEqual) {
+    constructor(name, yosysModule, idCounter, yosysModules, hierarchyLevel, nodePortNames, portSuffixesAreEqual, nodeIdToBuilder) {
         this.name = name;
         this.yosysModule = yosysModule;
         this.idCounter = idCounter;
@@ -43,19 +43,22 @@ class LNodeBuilder {
         this.nodePortNames = nodePortNames;
         this.childrenWithoutPortArray = [];
         this.nodeIdToCell = {};
-        this.nodeIdToBuilder = {};
+        this.nodeIdToBuilder = nodeIdToBuilder;
         this.portSuffixesAreEqual = portSuffixesAreEqual;
+
     }
 
-    build(hierarchyLevelLimit) {
+    build(hierarchyLevelLimit, fillPortsAndNode, node, portsFromNodePortNames) {
         if (this.name === undefined) {
             throw new Error("Name is undefined");
         }
 
-        let node = this.buildNode(this.name);
+        if (node === undefined) {
+            node = this.buildNode(this.name);
+        }
 
         if (this.yosysModule) {
-            this.loadNodeObjectsFromYosysModule(node, hierarchyLevelLimit, this.yosysModule);
+            this.loadNodeObjectsFromYosysModule(node, hierarchyLevelLimit, fillPortsAndNode, portsFromNodePortNames);
         }
 
         if (node.children !== undefined) {
@@ -92,20 +95,22 @@ class LNodeBuilder {
         return node;
     }
 
-    loadNodeObjectsFromYosysModule(node, hierarchyLevelLimit) {
+    loadNodeObjectsFromYosysModule(node, hierarchyLevelLimit, fillPortsAndNode, portsFromNodePortNames) {
         // cell with module definition, load ports, edges and children from module definition recursively
-        this.fillPorts(node, this.yosysModule.ports, (p) => {
-            return p.direction
-        }, undefined);
-        if (typeof(hierarchyLevelLimit) === "undefined" || hierarchyLevelLimit > 0) {
-            this.fillChildren(node, hierarchyLevelLimit);
-            this.fillEdges(node);
+        if (fillPortsAndNode) {
+            this.fillPorts(node, this.yosysModule.ports, (p) => {
+                return p.direction
+            }, undefined);
+        }
+        if (typeof (hierarchyLevelLimit) === "undefined" || hierarchyLevelLimit > 0) {
+            this.fillChildren(node, hierarchyLevelLimit, true);
+            this.fillEdges(node, fillPortsAndNode, portsFromNodePortNames);
         }
 
         if (node.children !== undefined && node.children.length > 0) {
             aggregateConcatsAndSlices(node);
         }
-}
+    }
 
 
     fillPorts(node, ports, getPortDirectionFn, cellObj) {
@@ -124,6 +129,7 @@ class LNodeBuilder {
             updatePortIndicesNoHierarchy(node.ports);
         }
     }
+
     getPortByNameDictForNode(node) {
         let portByName = this.nodePortNames[node.id];
         if (portByName === undefined) {
@@ -159,7 +165,6 @@ class LNodeBuilder {
     }
 
 
-
     makeLPort(node, portName, originalPortName, direction, portList, portByName) {
         if (portName === undefined) {
             throw new Error("Name is undefined");
@@ -185,18 +190,23 @@ class LNodeBuilder {
         return port;
     }
 
-    fillChildren(node, hierarchyLevelLimit) {
+    fillChildren(node, hierarchyLevelLimit, fillPortsAndNode) {
         // iterate all cells and lookup for modules and construct them recursively
         for (const [cellName, cellObj] of Object.entries(this.yosysModule.cells)) {
             let moduleName = cellObj.type; //module name
             let cellModuleObj = this.yosysModules[moduleName];
 
             let nodeBuilder = new LNodeBuilder(cellName, cellModuleObj, this.idCounter, this.yosysModules,
-                                   this.hierarchyLevel + 1, this.nodePortNames, this.portSuffixesAreEqual);
+                this.hierarchyLevel + 1, this.nodePortNames, this.portSuffixesAreEqual, this.nodeIdToBuilder);
             let hierarchyLevelLimitIsUndef = typeof hierarchyLevelLimit === "undefined";
             let subNode = nodeBuilder.build(hierarchyLevelLimitIsUndef ? undefined :
-                                            hierarchyLevelLimit - 1);
-            node.children.push(subNode);
+                hierarchyLevelLimit - 1, fillPortsAndNode);
+            let children = node.children || node._children;
+            if (children === undefined) {
+                node.children = [];
+                children = node.children;
+            }
+            children.push(subNode);
 
             this.nodeIdToBuilder[subNode.id] = nodeBuilder;
             this.idCounter = nodeBuilder.idCounter;
@@ -216,18 +226,19 @@ class LNodeBuilder {
         }
     }
 
-    fillEdges(node) {
+    fillEdges(node, fillPortsAndNode, portsFromNodePortNames) {
         let edgeTargetsDict = {};
         let edgeSourcesDict = {};
         let constNodeDict = {};
         let [edgeDict, edgeArray] = this.getEdgeDictFromPorts(
-            node, constNodeDict, edgeTargetsDict, edgeSourcesDict);
+            node, constNodeDict, edgeTargetsDict, edgeSourcesDict, fillPortsAndNode, portsFromNodePortNames);
         let netnamesDict = getNetNamesDict(this.yosysModule);
 
         function getPortName(bit) {
             return netnamesDict[bit];
         }
-        this.createEdges(node, constNodeDict, edgeDict, edgeArray, getPortName, edgeTargetsDict, edgeSourcesDict);
+
+        this.createEdges(node, constNodeDict, edgeDict, edgeArray, getPortName, edgeTargetsDict, edgeSourcesDict, fillPortsAndNode);
         this.completeEdgesForChildrenWithoutPort(edgeDict);
 
         this.filterDuplicitEdges(node, edgeArray);
@@ -245,7 +256,7 @@ class LNodeBuilder {
         }
     }
 
-    createEdges(node, constNodeDict, edgeDict, edgeArray, getPortName, edgeTargetsDict, edgeSourcesDict) {
+    createEdges(node, constNodeDict, edgeDict, edgeArray, getPortName, edgeTargetsDict, edgeSourcesDict, fillPortsAndNode) {
         for (const child of node.children) {
             let cell = this.nodeIdToCell[child.id];
 
@@ -260,7 +271,7 @@ class LNodeBuilder {
             }
 
             this.loadConnections(node, child, cell, connections, constNodeDict, edgeDict, edgeArray,
-                                 getPortName, edgeTargetsDict, edgeSourcesDict);
+                getPortName, edgeTargetsDict, edgeSourcesDict, fillPortsAndNode);
         }
         // source null and target null == direction is output
 
@@ -294,7 +305,7 @@ class LNodeBuilder {
     }
 
     loadConnections(node, child, cell, connections, constNodeDict, edgeDict, edgeArray,
-                    getPortName, edgeTargetsDict, edgeSourcesDict) {
+                    getPortName, edgeTargetsDict, edgeSourcesDict, fillPortsAndNode) {
         let portI = 0;
         for (const [portName, bits] of Object.entries(connections)) {
             let portObj;
@@ -309,16 +320,22 @@ class LNodeBuilder {
             }
 
             this.translateBitsToNets(node, child.id, portObj.id, bits, direction, edgeDict, constNodeDict,
-                edgeArray, getPortName, getSourceAndTargetForCell, edgeTargetsDict, edgeSourcesDict);
+                edgeArray, getPortName, getSourceAndTargetForCell, edgeTargetsDict, edgeSourcesDict, fillPortsAndNode);
         }
 
     }
-    getEdgeDictFromPorts(node, constNodeDict, edgeTargetsDict, edgeSourcesDict) {
+
+    getEdgeDictFromPorts(node, constNodeDict, edgeTargetsDict, edgeSourcesDict, fillPortsAndNode, portsFromNodePortNames) {
         let edgeDict = {}; // yosys bits (netId): LEdge
         let edgeArray = [];
         let portsIndex = 0;
         for (const [portName, portObj] of Object.entries(this.yosysModule.ports)) {
-            let port = node.ports[portsIndex];
+            let port;
+            if (portsFromNodePortNames) {
+                port = this.nodePortNames[node.id][portName];
+            } else {
+                port = node.ports[portsIndex];
+            }
             portsIndex++;
 
             function getPortName2() {
@@ -327,11 +344,12 @@ class LNodeBuilder {
 
             this.translateBitsToNets(node, node.id, port.id, portObj.bits, portObj.direction,
                 edgeDict, constNodeDict, edgeArray, getPortName2, getSourceAndTarget2,
-                edgeTargetsDict, edgeSourcesDict)
+                edgeTargetsDict, edgeSourcesDict, fillPortsAndNode)
 
         }
         return [edgeDict, edgeArray];
     }
+
     getEdgePointsAndDirection(edge) {
         let edgePoints;
         let direction;
@@ -357,7 +375,7 @@ class LNodeBuilder {
      * nodes are completed by filling sources and targets properties of LEdge.
      */
     translateBitsToNets(node, childId, portId, bits, direction, edgeDict, constNodeDict, edgeArray,
-                        getPortName, getSourceAndTarget, edgeTargetsDict, edgeSourcesDict) {
+                        getPortName, getSourceAndTarget, edgeTargetsDict, edgeSourcesDict, fillPortsAndNode) {
         for (let i = 0; i < bits.length; ++i) {
             let startIndex = i;
             let width = 1;
@@ -377,7 +395,7 @@ class LNodeBuilder {
                 edgeDict[bit] = edge;
                 edgeArray.push(edge);
                 if (netIsConst) {
-                    i = this.addConstNodeToSources(node, bits, edge.sources, i, constNodeDict);
+                    i = this.addConstNodeToSources(node, bits, edge.sources, i, constNodeDict, fillPortsAndNode);
                     width = i - startIndex + 1;
                 }
             }
@@ -419,7 +437,7 @@ class LNodeBuilder {
         return edge;
     }
 
-    addConstNodeToSources(node, bits, sources, i, constNodeDict) {
+    addConstNodeToSources(node, bits, sources, i, constNodeDict, fillPortsAndNode) {
         let nameArray = [];
         for (i; i < bits.length; ++i) {
             let bit = bits[i];
@@ -434,17 +452,17 @@ class LNodeBuilder {
         let nodeName = getConstNodeName(nameArray);
         let constSubNode;
         let port;
-        [constSubNode, port] = this.addConstNode(node, nodeName, constNodeDict);
+        [constSubNode, port] = this.addConstNode(node, nodeName, constNodeDict, fillPortsAndNode);
         sources.push([constSubNode.id, port.id]);
         return i;
     }
 
-    addConstNode(node, nodeName, constNodeDict) {
+    addConstNode(node, nodeName, constNodeDict, fillPortsAndNode) {
         let port;
 
         let nodeBuilder = new LNodeBuilder(nodeName, undefined, this.idCounter, null,
-            this.hierarchyLevel + 1, this.nodePortNames, this.portSuffixesAreEqual);
-        let subNode = nodeBuilder.build(undefined);
+            this.hierarchyLevel + 1, this.nodePortNames, this.portSuffixesAreEqual, this.nodeIdToBuilder);
+        let subNode = nodeBuilder.build(undefined, true);
         this.idCounter = nodeBuilder.idCounter;
 
         let portByName = this.nodePortNames[subNode.id] = {};
@@ -477,7 +495,6 @@ class LNodeBuilder {
                 childBuilder.idCounter = undefined;
             }
         }
-
     }
 
     hideNodeObjects(node) {
@@ -491,41 +508,106 @@ class LNodeBuilder {
     }
 }
 
-function buildMainComponentNode(output, yosysJson, rootNodeBuilder, nodePortNames, portSuffixesAreEqual,
-                                hierarchyLevelLimitIsUndef, hierarchyLevelLimit) {
-    let [topModuleName, topModuleObj] = getTopModule(yosysJson);
-    let nodeBuilder = new LNodeBuilder(topModuleName,
-                                       topModuleObj,
-                                       rootNodeBuilder.idCounter,
-                                       yosysJson.modules,
-                                       1,
-                                       nodePortNames,
-                                       portSuffixesAreEqual);
-    let mainComponentNode = nodeBuilder.build(hierarchyLevelLimitIsUndef ?
-                                              undefined : hierarchyLevelLimit - 1);
-    output.children.push(mainComponentNode);
-    setPortHierarchy(nodeBuilder, mainComponentNode, nodeBuilder.nodePortNames[mainComponentNode.id]);
-    aggregateHierarchicalPortEdges(nodeBuilder, output.children[0], nodeBuilder.portSuffixesAreEqual);
 
-    return nodeBuilder;
-}
-export function yosys(yosysJson, hierarchyLevelLimit, portSuffixesAreEqual) {
-    let nodePortNames = {};
+export function fromYosys(yosysJson, hierarchyLevelLimit, portSuffixesAreEqual) {
+    //TODO fix state.edges is undefined when clicking
+    let nodePortNames = {}; // :see: :class:`~.LNodeBuilder`
 
     let rootNodeBuilder = new LNodeBuilder("root", null, 0, null,
-                                           0, nodePortNames, portSuffixesAreEqual);
+        0, nodePortNames, portSuffixesAreEqual, {});
+    rootNodeBuilder.nodeIdToBuilder["0"] = rootNodeBuilder;
     let hierarchyLevelLimitIsUndef = typeof hierarchyLevelLimit === "undefined";
-    let output = rootNodeBuilder.build(hierarchyLevelLimitIsUndef ? undefined : hierarchyLevelLimit - 1);
+    let childHierarchyLimit = hierarchyLevelLimitIsUndef ? undefined : hierarchyLevelLimit;
+    let output = rootNodeBuilder.build(childHierarchyLimit, true);
 
-    if (hierarchyLevelLimitIsUndef || hierarchyLevelLimit > 0) {
-        let nodeBuilder = buildMainComponentNode(output, yosysJson, rootNodeBuilder, nodePortNames,
-                                                 portSuffixesAreEqual, hierarchyLevelLimitIsUndef, hierarchyLevelLimit)
-        output.hwMeta.maxId = nodeBuilder.idCounter - 1;
-
-    } else {
-        output.hwMeta.maxId = rootNodeBuilder.idCounter - 1;
+    if (hierarchyLevelLimitIsUndef || childHierarchyLimit >= 0) {
+        let [topModuleName, topModuleObj] = getTopModule(yosysJson);
+        fromYosysForSingleNodeWithExistingRoot(output, yosysJson, topModuleName, topModuleObj, childHierarchyLimit,
+            rootNodeBuilder.idCounter - 1, nodePortNames, portSuffixesAreEqual, rootNodeBuilder.nodeIdToBuilder, undefined);
     }
     //print output to console
     //console.log(JSON.stringify(output, null, 2));
-    return output;
+
+    let childNodeBuilder = rootNodeBuilder.nodeIdToBuilder[output.children[0].id];
+    if (typeof hierarchyLevelLimit === "undefined") {
+        aggregateHierarchicalPortEdges(childNodeBuilder, output.children[0], portSuffixesAreEqual);
+    }
+
+    if (hierarchyLevelLimitIsUndef) {
+        output.hwMeta.maxId = childNodeBuilder.idCounter - 1
+    }
+    return [output, rootNodeBuilder];
+}
+
+export function fromYosysForSingleNodeWithExistingRoot(output, yosysJson, topModuleName, topModuleObj, hierarchyLevelLimit,
+                                                       currentMaxId, nodePortNames,
+                                                       portSuffixesAreEqual, nodeIdToBuilder, nodeBuilder) {
+    // build main component node
+    let mainComponentNode;
+    if (nodeBuilder === undefined) {
+        nodeBuilder = new LNodeBuilder(topModuleName,
+            topModuleObj,
+            currentMaxId + 1,
+            yosysJson.modules,
+            1,
+            nodePortNames,
+            portSuffixesAreEqual,
+            nodeIdToBuilder);
+        mainComponentNode = nodeBuilder.build(hierarchyLevelLimit, true, undefined, false);
+        let children = output.children || output._children;
+        if (children === undefined) {
+            output.children = [];
+            children = output.children;
+        }
+        children.push(mainComponentNode);
+        nodeIdToBuilder[mainComponentNode.id] = nodeBuilder;
+    } else {
+        output.edges = [];
+        output.children = [];
+        mainComponentNode = nodeBuilder.build(hierarchyLevelLimit, false, output, true);
+
+    }
+
+
+    setPortHierarchy(nodeBuilder, mainComponentNode, nodeBuilder.nodePortNames[mainComponentNode.id]);
+    aggregateHierarchicalPortEdges(nodeBuilder, output, nodeBuilder.portSuffixesAreEqual);
+    output.hwMeta.maxId = nodeBuilder.idCounter;
+}
+
+export function elkGetModuleByPath(rootNode, path) {
+    let children = rootNode.children
+    let output = rootNode;
+    let objectPath = [output];
+    for (let nodeName of path) {
+        for (let child of children) {
+            if (child.hwMeta.name === nodeName) {
+                output = child;
+                objectPath.push(output);
+                children = child.children || child._children;
+                break;
+            }
+        }
+    }
+
+    return [output, objectPath];
+}
+
+export function yosysGetModuleByPath(yosysJson, path) {
+    let topModuleName;
+    let topModuleObj = null;
+    for (let nodeName of path) {
+        if (topModuleObj === null) {
+            // start of the search at top
+            [topModuleName, topModuleObj] = getTopModule(yosysJson);
+            continue;
+        }
+        let cellObj = topModuleObj.cells[nodeName];
+        let type = cellObj.type;
+        topModuleName = nodeName;
+        topModuleObj = yosysJson.modules[type];
+
+    }
+
+    return [topModuleName, topModuleObj];
+
 }
