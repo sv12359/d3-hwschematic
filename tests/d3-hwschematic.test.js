@@ -121,8 +121,8 @@ describe("Testing yosys", () => {
         it("Testing file: " + testFile, () => {
             let f = YOSYS_EXAMPLES + "/" + testFile + ".json";
             let graphData = JSON.parse(fs.readFileSync(f));
-            let [output, builder] = HwSchematic.fromYosys(graphData);
-            detectDuplicitIds(output, {});
+            let [output, builder] = HwSchematic.fromYosys(graphData, undefined, HwSchematic.fromYosysPortSuffixesAreEqual);
+            detectDuplicitIds(output, {}, true);
             checkMaxId(output);
             let refF = __dirname + "/data/" + testFile + ".json";
             // fs.writeFileSync(refF, JSON.stringify(output, null, 2)); //create refFiles

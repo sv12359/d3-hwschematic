@@ -1,5 +1,8 @@
 
 function isDuplicit(node, idDict) {
+    if (typeof node.id !== "string") {
+        throw new Error ("LNode id must be string: " + node.id);
+    }
     if (idDict[node.id] === undefined)
     {
         idDict[node.id] = node;
@@ -7,25 +10,29 @@ function isDuplicit(node, idDict) {
         throw new Error(("Duplicit id detected: " + node.id + ": " + node.hwMeta.name + " and "  + node.id + ": " + idDict[node.id].hwMeta.name));
     }
 }
-export function detectDuplicitIds(node, idDict) {
+export function detectDuplicitIds(node, idDict, checkPortChildren) {
     isDuplicit(node, idDict);
     let children = node.children || node._children
     if (children !== undefined) {
         for (let child of children) {
-            detectDuplicitIds(child, idDict);
+            detectDuplicitIds(child, idDict, checkPortChildren);
         }
     }
     let edges = node.edges || node._edges;
     if (edges !== undefined) {
         for (let edge of edges) {
-            detectDuplicitIds(edge, idDict)
+            detectDuplicitIds(edge, idDict, checkPortChildren)
         }
     }
 
     let ports = node.ports || node._ports;
     if (ports !== undefined) {
         for (let port of ports) {
-            detectDuplicitIds(port, idDict)
+            if (checkPortChildren) {
+                detectDuplicitIds(port, idDict, checkPortChildren);
+            } else {
+                isDuplicit(port, idDict);
+            }
         }
     }
 }
