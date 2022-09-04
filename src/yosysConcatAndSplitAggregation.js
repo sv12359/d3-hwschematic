@@ -29,14 +29,22 @@ export function getPortToEdgeDict(edges) {
     let portToEdgeDict = {};
     for (let edge of edges) {
         let targets = edge.targets;
-        let sources = edge.sources;
-        for (let [_, portId] of sources) {
-            portToEdgeDict[portId] = edge;
+        if (typeof targets === "undefined") {
+            // normal edge
+            portToEdgeDict[edge.sourcePort] = edge;
+            portToEdgeDict[edge.targetPort] = edge;
+        } else {
+            // hyperedge
+            let sources = edge.sources;
+            for (let [_, portId] of sources) {
+                portToEdgeDict[portId] = edge;
+            }
+
+            for (let [_, portId] of targets) {
+                portToEdgeDict[portId] = edge;
+            }
         }
 
-        for (let [_, portId] of targets) {
-            portToEdgeDict[portId] = edge;
-        }
     }
     return portToEdgeDict;
 }
@@ -216,9 +224,7 @@ function aggregateEdgeTargets(parent, edge, targets, nodeIdToNodeDict, portIdToE
     if (innitialNode !== undefined) {
         updatePortIndices(innitialNode.ports, 0);
         filterTargets(edge, nodeIdToNodeDict, innitialNode.id);
-
     }
-
 
     parent.children = parent.children.filter((c) => {
         return !nodesToDelete.has(c.id);
@@ -232,7 +238,6 @@ function aggregateSlices(node, nodeIdToNodeDict, portIdToEdgeDict) {
         }
         let targets = edge.targets;
         aggregateEdgeTargets(node, edge, targets, nodeIdToNodeDict, portIdToEdgeDict);
-
     }
 }
 export function aggregateConcatsAndSlices(node) {
