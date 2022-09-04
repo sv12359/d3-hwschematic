@@ -39,8 +39,8 @@ export function fromYosys(yosysJson, hierarchyLevelLimit, portSuffixesAreEqual) 
 
     let children = rootNode.children || rootNode._children;
     if (children === undefined) {
-        rootNode.children = [];
         rootNode.edges = [];
+        rootNode.children = [];
         children = rootNode.children;
     }
     children.push(mainComponentNode);
