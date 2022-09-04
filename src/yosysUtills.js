@@ -30,11 +30,10 @@ function orderPorts(node) {
         ++index;
     }
 }
-export function orderClkAndRstPorts(children) {
-    for (let child of children) {
-        if (child.hwMeta.cls === "Operator" && child.hwMeta.name.startsWith("FF")) {
-            orderPorts(child);
-        }
+
+export function orderClkAndRstPorts(child) {
+    if (child.hwMeta.cls === "Operator" && child.hwMeta.name.startsWith("FF")) {
+        orderPorts(child);
     }
 }
 
@@ -102,20 +101,6 @@ export function getPortNameSplice(startIndex, width) {
 }
 
 
-export function hideChildrenAndNodes(node) {
-        if (node.children.length === 0 && node.edges.length === 0) {
-            delete node.children
-            delete node.edges;
-
-        } else {
-            node._children = node.children;
-            delete node.children
-            node._edges = node.edges;
-            delete node.edges;
-        }
-}
-
-
 export function updatePortIndices(ports, index) {
     for (let port of ports) {
         let side = port.properties.side;
@@ -180,4 +165,79 @@ export function getTopModule(yosysJson) {
         }
     }
     throw new Error("Cannot find top");
+}
+
+
+export function elkGetModuleByPath(rootNode, path) {
+    let children = rootNode.children
+    let output = rootNode;
+    let objectPath = [output];
+    for (let nodeName of path) {
+        for (let child of children) {
+            if (child.hwMeta.name === nodeName) {
+                output = child;
+                objectPath.push(output);
+                children = child.children || child._children;
+                break;
+            }
+        }
+    }
+
+    return [output, objectPath];
+}
+
+/**
+ * @returns null if cellObj is does not have a module in yosys modules
+ */
+export function yosysGetModuleByPath(yosysJson, path) {
+    let topModuleName;
+    let topModuleObj = null;
+    for (let nodeName of path) {
+        if (topModuleObj === null) {
+            // start of the search at top
+            [topModuleName, topModuleObj] = getTopModule(yosysJson);
+            continue;
+        }
+        let cellObj = topModuleObj.cells[nodeName];
+        if (typeof cellObj === "undefined") {
+            return [null, null];
+        }
+
+        let type = cellObj.type;
+        topModuleName = nodeName;
+        topModuleObj = yosysJson.modules[type];
+    }
+
+    return [topModuleName, topModuleObj];
+
+}
+
+export function hideNodeObjects(node, hierarchyLevel) {
+    node._children = node.children;
+    delete node.children
+    node._edges = node.edges;
+    delete node.edges;
+}
+
+export function getPortName(isSlice, isConcat, portName, cellObj) {
+    if (isSlice || isConcat) {
+        if (isSlice) {
+            if (portName === "A") {
+                return "";
+            } else if (portName === "Y") {
+                return getPortNameSplice(cellObj.parameters.OFFSET, cellObj.parameters.Y_WIDTH);
+            }
+        } else if (isConcat) {
+            let par = cellObj.parameters;
+
+            if (portName === "Y") {
+                return "";
+            } else if (portName === "A") {
+                return getPortNameSplice(0, par.A_WIDTH);
+            } else if (portName === "B") {
+                return getPortNameSplice(par.A_WIDTH, par.B_WIDTH);
+            }
+        }
+    }
+    return portName
 }

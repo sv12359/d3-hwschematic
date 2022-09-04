@@ -7,7 +7,7 @@ import {simulateEvent} from './simulateEvent.js';
 import * as fs from 'fs';
 import * as glob from 'glob';
 import * as path from 'path';
-import {checkMaxId, detectDuplicitIds} from "./objectIdTestFunctions.js";
+import {checkMaxId, checkIdDuplicities} from "./objectIdTestFunctions.js";
 
 const EXAMPLES = __dirname + "/../examples/schemes"
 const YOSYS_EXAMPLES = __dirname + "/../examples/schemes_yosys"
@@ -122,7 +122,7 @@ describe("Testing yosys", () => {
             let f = YOSYS_EXAMPLES + "/" + testFile + ".json";
             let graphData = JSON.parse(fs.readFileSync(f));
             let [output, builder] = HwSchematic.fromYosys(graphData, undefined, HwSchematic.fromYosysPortSuffixesAreEqual);
-            detectDuplicitIds(output, {}, true);
+            checkIdDuplicities(output, {}, true);
             checkMaxId(output);
             let refF = __dirname + "/data/" + testFile + ".json";
             // fs.writeFileSync(refF, JSON.stringify(output, null, 2)); //create refFiles

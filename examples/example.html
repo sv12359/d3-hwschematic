@@ -71,7 +71,94 @@
     }
 
     let hwSchematic = new d3.HwSchematic(svg);
-    let rootGraph = null;
+    function getPathToNodeAndRootNode(node) {
+        let path = []
+        let parent = node.parent;
+        while (typeof parent !== "undefined")
+        {
+            path.push(node.hwMeta.name);
+            node = parent;
+            parent = parent.parent;
+        }
+
+        return [path.reverse(), node];
+    }
+    hwSchematic.onNodeClick(function (ev, d) {
+
+        //console.log("todo load content of node d " + d.hwMeta.name);
+        let [path, rootNode] = getPathToNodeAndRootNode(d);
+        //let rootNodeBuilder = rootNode.nodeIdToBuilder[rootNode.id];
+        //console.log(path);
+        //console.log(rootNode);
+        //console.log(yosysJson_);
+        //console.log(rootNodeBuilder_);
+        if (typeof d.children === "undefined" && typeof d._children === "undefined") {
+            //Todo: duplicit (port?) id detected when clicking on the first level of moduleWithHierarchicalOutput6
+            let expandedNode = d3.HwSchematic.yosysLoadNodeByPath(yosysJson_, rootNode, path, rootNodeBuilder_);
+            if (expandedNode === null) {
+                return;
+            }
+
+            /*
+            let seen = [];
+            console.log(JSON.stringify(expandedNode, function(key, val) {
+                if (key === "nodeRenderers" || key === "renderer") {
+                    return;
+                }
+                if (val != null && typeof val == "object") {
+                    if (seen.indexOf(val) >= 0) {
+                        return "[string cycle]";
+                    }
+                    seen.push(val);
+                }
+                return val;
+            }, 2));
+             */
+
+
+
+            d3.HwSchematic._checkIdDuplicities(d, false);
+            //console.log(JSON.stringify(rootNode, null, 2));
+            d3.HwSchematic._checkMaxId(expandedNode);
+            if ((typeof d.children !== "undefined" && d.children.length === 0) && (typeof d.edges !== "undefined" && d.edges.length === 0)) {
+                delete d.children;
+                delete d.edges;
+            }
+            // collapse for _expandNodeOnClick
+            if (typeof d.children !== "undefined") {
+                d._children = d.children;
+                delete d.children;
+                d._edges = d.edges;
+                delete d.edges;
+            }
+
+            //graph should be the newly added child
+
+            let maxId = d3.HwSchematic._hyperEdgesToEdges(expandedNode, expandedNode.hwMeta.maxId) + 1;
+            let parent = expandedNode;
+            while (typeof parent !== "undefined") {
+                parent.hwMeta.maxId = maxId;
+                parent = parent.parent;
+            }
+            rootNodeBuilder_.idCounter.id = maxId;
+            let children = expandedNode.children || expandedNode._children;
+
+            if (typeof children !== "undefined") {
+                for (let child of children) {
+                    //call for every child
+                    d3.HwSchematic._initNodeParents(child, expandedNode);
+                    d3.HwSchematic._flattenLNodePorts(child);
+                    hwSchematic.nodeRenderers.prepare(child);
+                }
+            }
+
+            //console.log(rootNode);
+        }
+
+        hwSchematic._expandNodeOnClick(ev, d);
+    });
+
+        let rootGraph = null;
     let zoom = d3.zoom();
     zoom.on("zoom", function applyTransform(ev) {
         hwSchematic.root.attr("transform", ev.transform)
@@ -82,18 +169,52 @@
     svg.call(zoom)
         .on("dblclick.zoom", null)
 
+    let yosysJson_ = null;
+    let rootNodeBuilder_ = null;
+    let rootNode_ = null;
+
 </script>
 <script>
 
 
+    function findPathToIdRec(node, id, path) {
+        path.push(node.hwMeta.name);
+        if (node.id === id) {
+            return true
+        }
 
+        let children = node.children || node._children || [];
+        let edges = node.edges || node._edges || [];
+        let ports = node.ports || [];
 
+        for (let objList of [ports, edges, children]) {
+            for (let obj of objList) {
+                if (findPathToIdRec(obj, id, path)) {
+                    return true
+                }
+            }
+        }
+
+        path.pop();
+        return false;
+    }
+    function findPathToId(node, id) {
+        let path = [];
+        findPathToIdRec(node, id.toString(), path);
+        if (path.length === 0) {
+            throw new Error("Error: ID " + id + " was not found");
+        }
+
+        return path;
+    }
 
     // data loading script
     function fromYosys(yosysJson) {
-        let [rootNode, rootNodeBuilder] = d3.HwSchematic.fromYosys(yosysJson, undefined, d3.HwSchematic.fromYosysPortSuffixesAreEqualIOSuffixIgnore);
-        //d3.HwSchematic.yosysLoadNodeByPath(yosysJson, rootNode, ["moduleWithHierarchicalOutput6",], rootNodeBuilder);
-        //d3.HwSchematic.yosysLoadNodeByPath(yosysJson, rootNode, ["moduleWithHierarchicalOutput6", "u0"], rootNodeBuilder);
+        let [rootNode, rootNodeBuilder] = d3.HwSchematic.fromYosys(yosysJson, 0, d3.HwSchematic.fromYosysPortSuffixesAreEqualIOSuffixIgnore);
+        //d3.HwSchematic.yosysLoadNodeByPath(yosysJson, rootNode, ["aes"], rootNodeBuilder);
+        //d3.HwSchematic.yosysLoadNodeByPath(yosysJson, rootNode, ["riscv_top", "u_core"], rootNodeBuilder);
+        //d3.HwSchematic.yosysLoadNodeByPath(yosysJson, rootNode, ["riscv_top", "u_core", "u_lsu"], rootNodeBuilder);
+        //d3.HwSchematic.yosysLoadNodeByPath(yosysJson, rootNode, ["moduleWithHierarchicalOutput0", "b"], rootNodeBuilder);
         //d3.HwSchematic.yosysLoadNodeByPath(yosysJson, rootNode, ["moduleWithHierarchicalOutput6", "u0", "u1"], rootNodeBuilder);
         //console.log("JSON.stringify(rootNode, null, 2)");
         //console.log(JSON.stringify(rootNode, null, 2));
@@ -103,8 +224,13 @@
         //d3.HwSchematic.yosysLoadNodeByPath(yosysJson, rootNode, ["moduleWithHierarchicalOutput6", "u0"], rootNodeBuilder);
         //d3.HwSchematic.yosysLoadNodeByPath(yosysJson, rootNode, ["moduleWithHierarchicalOutput6", "u0", "u1"], rootNodeBuilder);
 
-        d3.HwSchematic.detectDuplicitIds(rootNode);
-        d3.HwSchematic.checkMaxId(rootNode);
+        d3.HwSchematic._checkIdDuplicities(rootNode, true);
+        d3.HwSchematic._checkMaxId(rootNode);
+        yosysJson_ = yosysJson;
+        rootNodeBuilder_ = rootNodeBuilder;
+        rootNode_ = rootNode;
+
+        //console.log("Path to ID: " + findPathToId(rootNode, 0));
         return rootNode;
     }
 
@@ -199,9 +325,9 @@
         if (graph.hwMeta && graph.hwMeta.name)
             document.title = graph.hwMeta.name;
         // load the data and render the elements
-        let graph_ = JSON.parse(JSON.stringify(graph));
+        //let graph_ = JSON.parse(JSON.stringify(graph));
         //console.log("graph: \n" + graph_);
-        hwSchematic.bindData(graph_).then(() => {
+        hwSchematic.bindData(graph).then(() => {
         }, (e) => {
             hwSchematic.setErrorText(e);
             throw e;

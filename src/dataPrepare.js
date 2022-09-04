@@ -93,14 +93,14 @@ export function initNodeParents(node, parent) {
 	});
 
 }
-export function expandPorts(node) {
+export function flattenLNodePorts(node) {
 	let portList = [];
 	if (node.ports)
     	node.ports.forEach(function (port) {expandPorts4port(port, portList)});
 	//node.hwMeta.parent = parent;
 	node.ports = portList;
 	(node.children || node._children || []).forEach(function(n) {
-		expandPorts(n, node);
+		flattenLNodePorts(n, node);
 	});
 }
 

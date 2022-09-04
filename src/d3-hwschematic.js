@@ -7,14 +7,15 @@ import {SliceNodeRenderer} from "./node_renderers/sliceNode";
 import {GenericNodeRenderer} from "./node_renderers/generic";
 import {renderLinks} from "./linkRenderer";
 import {Tooltip} from "./tooltip";
-import {elkGetModuleByPath, fromYosys, fromYosysForSingleNodeWithExistingRoot, yosysGetModuleByPath} from "./yosys.js";
+import {fromYosys, fromYosysForSingleNodeWithExistingRoot} from "./yosys.js";
 import {
     hyperEdgesToEdges,
-    getNet, initNodeParents, expandPorts
+    getNet, initNodeParents, flattenLNodePorts
 } from "./dataPrepare";
 import {default as d3elk} from "./elk/elk-d3";
 import {selectGraphRootByPath} from "./hierarchySelection.js";
-import {checkMaxId, detectDuplicitIds} from "../tests/objectIdTestFunctions.js";
+import {checkMaxId, checkIdDuplicities} from "../tests/objectIdTestFunctions.js";
+import {elkGetModuleByPath, yosysGetModuleByPath} from "./yosysUtills.js";
 
 
 function getNameOfEdge(e) {
@@ -84,6 +85,7 @@ export default class HwSchematic {
         this.errorText = null;
         this._nodes = null;
         this._edges = null;
+        this._onNodeClick = this._expandNodeOnClick.bind(this);
 
         // graph layouter to resolve positions of elements
         this.layouter = new d3elk();
@@ -137,9 +139,9 @@ export default class HwSchematic {
         if (!graph.properties[postCompaction]) {
             graph.properties[postCompaction] = "EDGE_LENGTH";
         }
-        hyperEdgesToEdges(graph, graph.hwMeta.maxId);
+        graph.hwMeta.maxId =  hyperEdgesToEdges(graph, graph.hwMeta.maxId) + 1;
         initNodeParents(graph, null);
-        expandPorts(graph);
+        flattenLNodePorts(graph);
 
         if (this._PERF) {
             let t0 = new Date().getTime();
@@ -196,12 +198,34 @@ export default class HwSchematic {
                 }
             );
     }
-    /*
-    setOnNodeClick(callback) {
 
+    onNodeClick(callback) {
+        if (arguments.length === 0) {
+            return this._onNodeClick
+        } else {
+            this._onNodeClick = callback;
+        }
     }
-    */
 
+    _expandNodeOnClick(ev, d) {
+        let [children, nextFocusTarget] = toggleHideChildren(d);
+        let edges = d.edges || d._edges;
+        if ((!children || children.length === 0) && (!edges || edges.length === 0)) {
+            return; // does not have anything to expand
+        }
+        this.layouter.markLayoutDirty();
+        this.removeGraph();
+        let _this = this;
+        this._draw().then(
+            function () {
+                _this.layouter.zoomToFit(nextFocusTarget);
+            },
+            function (e) {
+                // Error while applying of layout
+                throw e;
+            }
+        );
+    }
     /**
      * Draw a component graph from layout data
      */
@@ -214,28 +238,8 @@ export default class HwSchematic {
             .append("g");
         this.nodeRenderers.render(root, node);
 
-        let _this = this;
-
-        function expandNode(ev, d) {
-            let [children, nextFocusTarget] = toggleHideChildren(d);
-            if (!children || children.length === 0) {
-                return; // does not have anything to expand
-            }
-            _this.layouter.markLayoutDirty();
-            _this.removeGraph();
-            _this._draw().then(
-                function () {
-                    _this.layouter.zoomToFit(nextFocusTarget);
-                },
-                function (e) {
-                    // Error while applying of layout
-                    throw e;
-                }
-            );
-        }
-
-        node.on("click", expandNode);
-        node.on("auxclick", expandNode);
+        node.on("click", this._onNodeClick);
+        node.on("auxclick", this._onNodeClick);
 
         this._applyLayoutLinks();
     }
@@ -328,34 +332,56 @@ export default class HwSchematic {
         return leftSuffix === rightSuffix;
     }
 
-    static detectDuplicitIds(rootNode) {
-        return detectDuplicitIds(rootNode, {})
+    static _checkIdDuplicities(rootNode, checkPortChildren) {
+        return checkIdDuplicities(rootNode, {}, checkPortChildren)
     }
 
-    static checkMaxId(rootNode) {
+    static _checkMaxId(rootNode) {
         return checkMaxId(rootNode);
     }
+
+    static _hyperEdgesToEdges(n, idOffset) {
+        return hyperEdgesToEdges(n, idOffset);
+    }
+
+    static _initNodeParents(node, parent) {
+        return initNodeParents(node, parent);
+    }
+
+    static _flattenLNodePorts(node) {
+        return flattenLNodePorts(node);
+    }
+
+    /**
+     * @param path list of module name instances
+     * @returns null if cellObj is does not have a module in yosys modules
+     */
     static yosysLoadNodeByPath(yosysJson, rootNode, path, rootNodeBuilder) {
-        let [output, objectPath] = elkGetModuleByPath(rootNode, path);
-        //if (typeof output === "undefined") {
-        //    return;
-        //}
+        let [currentNode, objectPath] = elkGetModuleByPath(rootNode, path);
 
         let [topModuleName, topModuleObj] = yosysGetModuleByPath(yosysJson, path);
-        let nodeBuilder = rootNodeBuilder.nodeIdToBuilder[output.id];
+        if (topModuleName === null) {
+            return null;
+        }
+
+        let nodeBuilder = rootNodeBuilder.nodeIdToBuilder[currentNode.id];
         if (nodeBuilder === undefined) {
             throw new Error("Error: nodeBuilder is undefined");
         }
-        nodeBuilder.idCounter = rootNode.hwMeta.maxId;
-        fromYosysForSingleNodeWithExistingRoot(output, yosysJson, topModuleName, topModuleObj, 1,
-            rootNode.hwMeta.maxId, {}, HwSchematic.fromYosysPortSuffixesAreEqual, rootNodeBuilder.nodeIdToBuilder, nodeBuilder);
+
+        nodeBuilder.idCounter.id = rootNode.hwMeta.maxId;
+        fromYosysForSingleNodeWithExistingRoot(currentNode, yosysJson, topModuleName, topModuleObj, nodeBuilder.hierarchyLevel,
+            rootNode.hwMeta.maxId, {}, HwSchematic.fromYosysPortSuffixesAreEqual, rootNodeBuilder, nodeBuilder);
+
         for (let parentNode of objectPath) {
             let parentNodeBuilder = rootNodeBuilder.nodeIdToBuilder[parentNode.id];
             if (typeof parentNodeBuilder === "undefined") {
                 throw new Error("cannot find nodeBuildrer for " + parentNode.id + " " + parentNode.hwMeta.name);
             }
-            parentNodeBuilder.idCounter = parentNode.hwMeta.maxId = nodeBuilder.idCounter;
+            parentNode.hwMeta.maxId = nodeBuilder.idCounter.id - 1;
         }
+
+        return currentNode;
     }
 
     terminate() {

@@ -1,25 +1,5 @@
 import {convertPortOrderingFromYosysToElk} from "./yosysUtills.js";
 
-function createPortHierarchy(nodeBuilder, node, portsAggregatedByPrefix, newPortList, portByName) {
-    if (!portsAggregatedByPrefix.hasMultipleChildren()) {
-        newPortList.push(portsAggregatedByPrefix.getAnyChildren());
-        return;
-    }
-    if (portsAggregatedByPrefix.namePrefix !== "") {
-        // add header of a port group if required
-        let direction = portsAggregatedByPrefix.getMajorityDirection().toLowerCase();
-        let portName = portsAggregatedByPrefix.namePrefix;
-        let portGroupHeaderPort = nodeBuilder.makeLPort(node, portName, portName, direction,
-                                                        newPortList, portByName);
-        newPortList = portGroupHeaderPort.children;
-    }
-    for (let port of portsAggregatedByPrefix.children) {
-        newPortList.push(port);
-    }
-    for (let [_, nameDictNode] of Object.entries(portsAggregatedByPrefix.nestedChildren)) {
-        createPortHierarchy(nodeBuilder, node, nameDictNode, newPortList, portByName);
-    }
-}
 
 class NameDictNode {
     constructor(namePrefix) {
@@ -190,16 +170,50 @@ function setPortSides(ports) {
     }
 }
 
+
+function createPortHierarchy(nodeBuilder, node, portsAggregatedByPrefix, newPortList, portByName) {
+    if (!portsAggregatedByPrefix.hasMultipleChildren()) {
+        newPortList.push(portsAggregatedByPrefix.getAnyChildren());
+        return;
+    }
+    if (portsAggregatedByPrefix.namePrefix !== "") {
+        // add header of a port group if required
+        let direction = portsAggregatedByPrefix.getMajorityDirection().toLowerCase();
+        let portName = portsAggregatedByPrefix.namePrefix;
+        let portGroupHeaderPort = nodeBuilder.createLPort(node, portName, portName, direction,
+            newPortList, portByName);
+        newPortList = portGroupHeaderPort.children;
+    }
+    for (let port of portsAggregatedByPrefix.children) {
+        newPortList.push(port);
+    }
+    for (let [_, nameDictNode] of Object.entries(portsAggregatedByPrefix.nestedChildren)) {
+        createPortHierarchy(nodeBuilder, node, nameDictNode, newPortList, portByName);
+    }
+}
+
+// todo rename to discoverPortHierarchy
 export function setPortHierarchy(nodeBuilder, node, portByName) {
     if (node.ports.length > 1) {
         let portsAggregatedByPrefix = getPortStartNameToPorts(node.ports);
         let newPortList = [];
         createPortHierarchy(nodeBuilder, node, portsAggregatedByPrefix, newPortList, portByName);
+
         node.ports = newPortList;
         setPortSides(node.ports);
-
         convertPortOrderingFromYosysToElk(node);
     }
-
-
+}
+/**
+ * Collect a dictionary mapping port id to id of its parent.
+ * Parent can be LPort or LNode.
+ **/
+export function collectPortIdToParentObjDict(parent, port, portIdToParentDict) {
+    if (portIdToParentDict[port.id]) {
+        throw new Error("Redefinition of port " + port.id + " " + port.hwMeta.name);
+    }
+    portIdToParentDict[port.id] = parent;
+    for (const childPort  of port.children) {
+        collectPortIdToParentObjDict(port, childPort, portIdToParentDict);
+    }
 }
