@@ -156,7 +156,7 @@ export class GenericNodeRenderer {
 			var _MBT = [MBT[0] / CHAR_WIDTH, MBT[1] / CHAR_HEIGHT];
 
 			if (bodyTextLines && (!d.children
-				|| d.children.length == 0)) {
+				|| d.children.length == 0) && (!d.edges || d.edges.length === 0)) {
 				bodyTextLines.forEach(function(line, dy) {
 					if (line.length > _MBT[0])
 						line = line.slice(0, _MBT[0] - 3) + "...";
