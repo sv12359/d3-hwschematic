@@ -115,7 +115,8 @@ describe("Testing yosys", () => {
         "slice3", "slice4", "slice5", "slice6", "slice7", "constPortDriver", "dff_sync_reset",
         "fifo", "latchinf", "concat0", "concat1", "concat2", "fulladder_4bit", "moduleWithHierarchicalOutput0",
         "moduleWithHierarchicalOutput1", "moduleWithHierarchicalOutput2", "moduleWithHierarchicalOutput3",
-        "moduleWithHierarchicalOutput4", "moduleWithHierarchicalOutput5", "moduleWithHierarchicalOutput6"];
+        "moduleWithHierarchicalOutput4", "moduleWithHierarchicalOutput5", "moduleWithHierarchicalOutput6",
+		"moduleWithHierarchicalOutput7"];
 
     for (const testFile of testFiles) {
         it("Testing file: " + testFile, () => {
@@ -125,7 +126,7 @@ describe("Testing yosys", () => {
             checkIdDuplicities(output, {}, true);
             checkMaxId(output);
             let refF = __dirname + "/data/" + testFile + ".json";
-            // fs.writeFileSync(refF, JSON.stringify(output, null, 2)); //create refFiles
+            //fs.writeFileSync(refF, JSON.stringify(output, null, 2)); //create refFiles
             let refGraphData = JSON.parse(fs.readFileSync(refF));
             expect(output).toEqual(refGraphData);
         })

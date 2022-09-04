@@ -1,0 +1,692 @@
+{
+  "creator": "Yosys 0.9 (git sha1 1979e0b)",
+  "modules": {
+    "moduleWithHierarchicalOutput7": {
+      "attributes": {
+        "top": 1,
+        "src": "moduleWithHierarchicalOutput7.v:29"
+      },
+      "ports": {
+        "A_0_0": {
+          "direction": "input",
+          "bits": [ 2 ]
+        },
+        "A_0_1": {
+          "direction": "input",
+          "bits": [ 3 ]
+        },
+        "A_0_2": {
+          "direction": "input",
+          "bits": [ 4 ]
+        },
+        "B_0_0": {
+          "direction": "output",
+          "bits": [ 5 ]
+        },
+        "B_0_1": {
+          "direction": "output",
+          "bits": [ 6 ]
+        },
+        "B_0_2": {
+          "direction": "output",
+          "bits": [ 7 ]
+        },
+        "C_0_0": {
+          "direction": "input",
+          "bits": [ 8 ]
+        },
+        "C_0_1": {
+          "direction": "input",
+          "bits": [ 9 ]
+        },
+        "C_0_2": {
+          "direction": "input",
+          "bits": [ 10 ]
+        },
+        "D_0_0": {
+          "direction": "output",
+          "bits": [ 11 ]
+        },
+        "D_0_1": {
+          "direction": "output",
+          "bits": [ 12 ]
+        },
+        "D_0_2": {
+          "direction": "output",
+          "bits": [ 13 ]
+        }
+      },
+      "cells": {
+        "u0": {
+          "hide_name": 0,
+          "type": "subModule0",
+          "parameters": {
+          },
+          "attributes": {
+            "module_not_derived": 1,
+            "src": "moduleWithHierarchicalOutput7.v:34"
+          },
+          "port_directions": {
+            "A_0_0": "input",
+            "A_0_1": "input",
+            "A_0_2": "input",
+            "B_0_0": "output",
+            "B_0_1": "output",
+            "B_0_2": "output",
+            "C_0_0": "input",
+            "C_0_1": "input",
+            "C_0_2": "input",
+            "D_0_0": "output",
+            "D_0_1": "output",
+            "D_0_2": "output"
+          },
+          "connections": {
+            "A_0_0": [ 2 ],
+            "A_0_1": [ 3 ],
+            "A_0_2": [ 4 ],
+            "B_0_0": [ 5 ],
+            "B_0_1": [ 6 ],
+            "B_0_2": [ 7 ],
+            "C_0_0": [ 8 ],
+            "C_0_1": [ 9 ],
+            "C_0_2": [ 10 ],
+            "D_0_0": [ 11 ],
+            "D_0_1": [ 12 ],
+            "D_0_2": [ 13 ]
+          }
+        }
+      },
+      "netnames": {
+        "A_0_0": {
+          "hide_name": 0,
+          "bits": [ 2 ],
+          "attributes": {
+            "src": "moduleWithHierarchicalOutput7.v:30"
+          }
+        },
+        "A_0_1": {
+          "hide_name": 0,
+          "bits": [ 3 ],
+          "attributes": {
+            "src": "moduleWithHierarchicalOutput7.v:30"
+          }
+        },
+        "A_0_2": {
+          "hide_name": 0,
+          "bits": [ 4 ],
+          "attributes": {
+            "src": "moduleWithHierarchicalOutput7.v:30"
+          }
+        },
+        "B_0_0": {
+          "hide_name": 0,
+          "bits": [ 5 ],
+          "attributes": {
+            "src": "moduleWithHierarchicalOutput7.v:31"
+          }
+        },
+        "B_0_1": {
+          "hide_name": 0,
+          "bits": [ 6 ],
+          "attributes": {
+            "src": "moduleWithHierarchicalOutput7.v:31"
+          }
+        },
+        "B_0_2": {
+          "hide_name": 0,
+          "bits": [ 7 ],
+          "attributes": {
+            "src": "moduleWithHierarchicalOutput7.v:31"
+          }
+        },
+        "C_0_0": {
+          "hide_name": 0,
+          "bits": [ 8 ],
+          "attributes": {
+            "src": "moduleWithHierarchicalOutput7.v:32"
+          }
+        },
+        "C_0_1": {
+          "hide_name": 0,
+          "bits": [ 9 ],
+          "attributes": {
+            "src": "moduleWithHierarchicalOutput7.v:32"
+          }
+        },
+        "C_0_2": {
+          "hide_name": 0,
+          "bits": [ 10 ],
+          "attributes": {
+            "src": "moduleWithHierarchicalOutput7.v:32"
+          }
+        },
+        "D_0_0": {
+          "hide_name": 0,
+          "bits": [ 11 ],
+          "attributes": {
+            "src": "moduleWithHierarchicalOutput7.v:33"
+          }
+        },
+        "D_0_1": {
+          "hide_name": 0,
+          "bits": [ 12 ],
+          "attributes": {
+            "src": "moduleWithHierarchicalOutput7.v:33"
+          }
+        },
+        "D_0_2": {
+          "hide_name": 0,
+          "bits": [ 13 ],
+          "attributes": {
+            "src": "moduleWithHierarchicalOutput7.v:33"
+          }
+        }
+      }
+    },
+    "subModule0": {
+      "attributes": {
+        "src": "moduleWithHierarchicalOutput7.v:19"
+      },
+      "ports": {
+        "A_0_0": {
+          "direction": "input",
+          "bits": [ 2 ]
+        },
+        "A_0_1": {
+          "direction": "input",
+          "bits": [ 3 ]
+        },
+        "A_0_2": {
+          "direction": "input",
+          "bits": [ 4 ]
+        },
+        "B_0_0": {
+          "direction": "output",
+          "bits": [ 5 ]
+        },
+        "B_0_1": {
+          "direction": "output",
+          "bits": [ 6 ]
+        },
+        "B_0_2": {
+          "direction": "output",
+          "bits": [ 7 ]
+        },
+        "C_0_0": {
+          "direction": "input",
+          "bits": [ 8 ]
+        },
+        "C_0_1": {
+          "direction": "input",
+          "bits": [ 9 ]
+        },
+        "C_0_2": {
+          "direction": "input",
+          "bits": [ 10 ]
+        },
+        "D_0_0": {
+          "direction": "output",
+          "bits": [ 11 ]
+        },
+        "D_0_1": {
+          "direction": "output",
+          "bits": [ 12 ]
+        },
+        "D_0_2": {
+          "direction": "output",
+          "bits": [ 13 ]
+        }
+      },
+      "cells": {
+        "u1": {
+          "hide_name": 0,
+          "type": "subModule1",
+          "parameters": {
+          },
+          "attributes": {
+            "module_not_derived": 1,
+            "src": "moduleWithHierarchicalOutput7.v:23"
+          },
+          "port_directions": {
+            "A_0_0": "input",
+            "A_0_1": "input",
+            "A_0_2": "input",
+            "B_0_0": "output",
+            "B_0_1": "output",
+            "B_0_2": "output",
+            "C_0_0": "input",
+            "C_0_1": "input",
+            "C_0_2": "input",
+            "D_0_0": "output",
+            "D_0_1": "output",
+            "D_0_2": "output"
+          },
+          "connections": {
+            "A_0_0": [ 2 ],
+            "A_0_1": [ 3 ],
+            "A_0_2": [ 4 ],
+            "B_0_0": [ 5 ],
+            "B_0_1": [ 6 ],
+            "B_0_2": [ 7 ],
+            "C_0_0": [ 8 ],
+            "C_0_1": [ 9 ],
+            "C_0_2": [ 10 ],
+            "D_0_0": [ 11 ],
+            "D_0_1": [ 12 ],
+            "D_0_2": [ 13 ]
+          }
+        }
+      },
+      "netnames": {
+        "A_0_0": {
+          "hide_name": 0,
+          "bits": [ 2 ],
+          "attributes": {
+            "src": "moduleWithHierarchicalOutput7.v:19"
+          }
+        },
+        "A_0_1": {
+          "hide_name": 0,
+          "bits": [ 3 ],
+          "attributes": {
+            "src": "moduleWithHierarchicalOutput7.v:19"
+          }
+        },
+        "A_0_2": {
+          "hide_name": 0,
+          "bits": [ 4 ],
+          "attributes": {
+            "src": "moduleWithHierarchicalOutput7.v:19"
+          }
+        },
+        "B_0_0": {
+          "hide_name": 0,
+          "bits": [ 5 ],
+          "attributes": {
+            "src": "moduleWithHierarchicalOutput7.v:20"
+          }
+        },
+        "B_0_1": {
+          "hide_name": 0,
+          "bits": [ 6 ],
+          "attributes": {
+            "src": "moduleWithHierarchicalOutput7.v:20"
+          }
+        },
+        "B_0_2": {
+          "hide_name": 0,
+          "bits": [ 7 ],
+          "attributes": {
+            "src": "moduleWithHierarchicalOutput7.v:20"
+          }
+        },
+        "C_0_0": {
+          "hide_name": 0,
+          "bits": [ 8 ],
+          "attributes": {
+            "src": "moduleWithHierarchicalOutput7.v:21"
+          }
+        },
+        "C_0_1": {
+          "hide_name": 0,
+          "bits": [ 9 ],
+          "attributes": {
+            "src": "moduleWithHierarchicalOutput7.v:21"
+          }
+        },
+        "C_0_2": {
+          "hide_name": 0,
+          "bits": [ 10 ],
+          "attributes": {
+            "src": "moduleWithHierarchicalOutput7.v:21"
+          }
+        },
+        "D_0_0": {
+          "hide_name": 0,
+          "bits": [ 11 ],
+          "attributes": {
+            "src": "moduleWithHierarchicalOutput7.v:22"
+          }
+        },
+        "D_0_1": {
+          "hide_name": 0,
+          "bits": [ 12 ],
+          "attributes": {
+            "src": "moduleWithHierarchicalOutput7.v:22"
+          }
+        },
+        "D_0_2": {
+          "hide_name": 0,
+          "bits": [ 13 ],
+          "attributes": {
+            "src": "moduleWithHierarchicalOutput7.v:22"
+          }
+        }
+      }
+    },
+    "subModule1": {
+      "attributes": {
+        "src": "moduleWithHierarchicalOutput7.v:9"
+      },
+      "ports": {
+        "A_0_0": {
+          "direction": "input",
+          "bits": [ 2 ]
+        },
+        "A_0_1": {
+          "direction": "input",
+          "bits": [ 3 ]
+        },
+        "A_0_2": {
+          "direction": "input",
+          "bits": [ 4 ]
+        },
+        "B_0_0": {
+          "direction": "output",
+          "bits": [ 5 ]
+        },
+        "B_0_1": {
+          "direction": "output",
+          "bits": [ 6 ]
+        },
+        "B_0_2": {
+          "direction": "output",
+          "bits": [ 7 ]
+        },
+        "C_0_0": {
+          "direction": "input",
+          "bits": [ 8 ]
+        },
+        "C_0_1": {
+          "direction": "input",
+          "bits": [ 9 ]
+        },
+        "C_0_2": {
+          "direction": "input",
+          "bits": [ 10 ]
+        },
+        "D_0_0": {
+          "direction": "output",
+          "bits": [ 11 ]
+        },
+        "D_0_1": {
+          "direction": "output",
+          "bits": [ 12 ]
+        },
+        "D_0_2": {
+          "direction": "output",
+          "bits": [ 13 ]
+        }
+      },
+      "cells": {
+        "u2": {
+          "hide_name": 0,
+          "type": "subModule2",
+          "parameters": {
+          },
+          "attributes": {
+            "module_not_derived": 1,
+            "src": "moduleWithHierarchicalOutput7.v:13"
+          },
+          "port_directions": {
+            "A_0_0": "input",
+            "A_0_1": "input",
+            "A_0_2": "input",
+            "B_0_0": "output",
+            "B_0_1": "output",
+            "B_0_2": "output",
+            "C_0_0": "input",
+            "C_0_1": "input",
+            "C_0_2": "input",
+            "D_0_0": "output",
+            "D_0_1": "output",
+            "D_0_2": "output"
+          },
+          "connections": {
+            "A_0_0": [ 2 ],
+            "A_0_1": [ 3 ],
+            "A_0_2": [ 4 ],
+            "B_0_0": [ 5 ],
+            "B_0_1": [ 6 ],
+            "B_0_2": [ 7 ],
+            "C_0_0": [ 8 ],
+            "C_0_1": [ 9 ],
+            "C_0_2": [ 10 ],
+            "D_0_0": [ 11 ],
+            "D_0_1": [ 12 ],
+            "D_0_2": [ 13 ]
+          }
+        }
+      },
+      "netnames": {
+        "A_0_0": {
+          "hide_name": 0,
+          "bits": [ 2 ],
+          "attributes": {
+            "src": "moduleWithHierarchicalOutput7.v:9"
+          }
+        },
+        "A_0_1": {
+          "hide_name": 0,
+          "bits": [ 3 ],
+          "attributes": {
+            "src": "moduleWithHierarchicalOutput7.v:9"
+          }
+        },
+        "A_0_2": {
+          "hide_name": 0,
+          "bits": [ 4 ],
+          "attributes": {
+            "src": "moduleWithHierarchicalOutput7.v:9"
+          }
+        },
+        "B_0_0": {
+          "hide_name": 0,
+          "bits": [ 5 ],
+          "attributes": {
+            "src": "moduleWithHierarchicalOutput7.v:10"
+          }
+        },
+        "B_0_1": {
+          "hide_name": 0,
+          "bits": [ 6 ],
+          "attributes": {
+            "src": "moduleWithHierarchicalOutput7.v:10"
+          }
+        },
+        "B_0_2": {
+          "hide_name": 0,
+          "bits": [ 7 ],
+          "attributes": {
+            "src": "moduleWithHierarchicalOutput7.v:10"
+          }
+        },
+        "C_0_0": {
+          "hide_name": 0,
+          "bits": [ 8 ],
+          "attributes": {
+            "src": "moduleWithHierarchicalOutput7.v:11"
+          }
+        },
+        "C_0_1": {
+          "hide_name": 0,
+          "bits": [ 9 ],
+          "attributes": {
+            "src": "moduleWithHierarchicalOutput7.v:11"
+          }
+        },
+        "C_0_2": {
+          "hide_name": 0,
+          "bits": [ 10 ],
+          "attributes": {
+            "src": "moduleWithHierarchicalOutput7.v:11"
+          }
+        },
+        "D_0_0": {
+          "hide_name": 0,
+          "bits": [ 11 ],
+          "attributes": {
+            "src": "moduleWithHierarchicalOutput7.v:12"
+          }
+        },
+        "D_0_1": {
+          "hide_name": 0,
+          "bits": [ 12 ],
+          "attributes": {
+            "src": "moduleWithHierarchicalOutput7.v:12"
+          }
+        },
+        "D_0_2": {
+          "hide_name": 0,
+          "bits": [ 13 ],
+          "attributes": {
+            "src": "moduleWithHierarchicalOutput7.v:12"
+          }
+        }
+      }
+    },
+    "subModule2": {
+      "attributes": {
+        "src": "moduleWithHierarchicalOutput7.v:1"
+      },
+      "ports": {
+        "A_0_0": {
+          "direction": "input",
+          "bits": [ 2 ]
+        },
+        "A_0_1": {
+          "direction": "input",
+          "bits": [ 3 ]
+        },
+        "A_0_2": {
+          "direction": "input",
+          "bits": [ 4 ]
+        },
+        "B_0_0": {
+          "direction": "output",
+          "bits": [ 2 ]
+        },
+        "B_0_1": {
+          "direction": "output",
+          "bits": [ 3 ]
+        },
+        "B_0_2": {
+          "direction": "output",
+          "bits": [ 4 ]
+        },
+        "C_0_0": {
+          "direction": "input",
+          "bits": [ 5 ]
+        },
+        "C_0_1": {
+          "direction": "input",
+          "bits": [ 6 ]
+        },
+        "C_0_2": {
+          "direction": "input",
+          "bits": [ 7 ]
+        },
+        "D_0_0": {
+          "direction": "output",
+          "bits": [ 5 ]
+        },
+        "D_0_1": {
+          "direction": "output",
+          "bits": [ 6 ]
+        },
+        "D_0_2": {
+          "direction": "output",
+          "bits": [ 7 ]
+        }
+      },
+      "cells": {
+      },
+      "netnames": {
+        "A_0_0": {
+          "hide_name": 0,
+          "bits": [ 2 ],
+          "attributes": {
+            "src": "moduleWithHierarchicalOutput7.v:1"
+          }
+        },
+        "A_0_1": {
+          "hide_name": 0,
+          "bits": [ 3 ],
+          "attributes": {
+            "src": "moduleWithHierarchicalOutput7.v:1"
+          }
+        },
+        "A_0_2": {
+          "hide_name": 0,
+          "bits": [ 4 ],
+          "attributes": {
+            "src": "moduleWithHierarchicalOutput7.v:1"
+          }
+        },
+        "B_0_0": {
+          "hide_name": 0,
+          "bits": [ 2 ],
+          "attributes": {
+            "src": "moduleWithHierarchicalOutput7.v:2"
+          }
+        },
+        "B_0_1": {
+          "hide_name": 0,
+          "bits": [ 3 ],
+          "attributes": {
+            "src": "moduleWithHierarchicalOutput7.v:2"
+          }
+        },
+        "B_0_2": {
+          "hide_name": 0,
+          "bits": [ 4 ],
+          "attributes": {
+            "src": "moduleWithHierarchicalOutput7.v:2"
+          }
+        },
+        "C_0_0": {
+          "hide_name": 0,
+          "bits": [ 5 ],
+          "attributes": {
+            "src": "moduleWithHierarchicalOutput7.v:3"
+          }
+        },
+        "C_0_1": {
+          "hide_name": 0,
+          "bits": [ 6 ],
+          "attributes": {
+            "src": "moduleWithHierarchicalOutput7.v:3"
+          }
+        },
+        "C_0_2": {
+          "hide_name": 0,
+          "bits": [ 7 ],
+          "attributes": {
+            "src": "moduleWithHierarchicalOutput7.v:3"
+          }
+        },
+        "D_0_0": {
+          "hide_name": 0,
+          "bits": [ 5 ],
+          "attributes": {
+            "src": "moduleWithHierarchicalOutput7.v:4"
+          }
+        },
+        "D_0_1": {
+          "hide_name": 0,
+          "bits": [ 6 ],
+          "attributes": {
+            "src": "moduleWithHierarchicalOutput7.v:4"
+          }
+        },
+        "D_0_2": {
+          "hide_name": 0,
+          "bits": [ 7 ],
+          "attributes": {
+            "src": "moduleWithHierarchicalOutput7.v:4"
+          }
+        }
+      }
+    }
+  }
+}
