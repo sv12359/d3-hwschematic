@@ -2,7 +2,8 @@
   * Collect list of expanded nodes
   */
 export function computeLayoutCacheKey(n, res) {
-	res.push(n.id);
+	if (n.children)
+		res.push(n.id);
 	if (n.children) {
 		n.children.forEach((d) => { computeLayoutCacheKey(d, res); });
 	}
