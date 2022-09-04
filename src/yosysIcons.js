@@ -59,7 +59,5 @@ export function yosysTranslateIcon(node, cell) {
         }
         meta.cls = "Operator";
         meta.name = name;
-
     }
-
 }
