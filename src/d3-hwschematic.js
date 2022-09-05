@@ -369,7 +369,7 @@ export default class HwSchematic {
             throw new Error("Error: nodeBuilder is undefined");
         }
 
-        nodeBuilder.idCounter.id = rootNode.hwMeta.maxId;
+        nodeBuilder.idCounter.id = rootNode.hwMeta.maxId + 1;
         fromYosysForSingleNodeWithExistingRoot(currentNode, yosysJson, topModuleName, topModuleObj, nodeBuilder.hierarchyLevel,
             rootNode.hwMeta.maxId, {}, HwSchematic.fromYosysPortSuffixesAreEqual, rootNodeBuilder, nodeBuilder);
 
