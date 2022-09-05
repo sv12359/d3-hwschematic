@@ -84,8 +84,6 @@
         return [path.reverse(), node];
     }
     hwSchematic.onNodeClick(function (ev, d) {
-
-        //console.log("todo load content of node d " + d.hwMeta.name);
         let [path, rootNode] = getPathToNodeAndRootNode(d);
         //let rootNodeBuilder = rootNode.nodeIdToBuilder[rootNode.id];
         //console.log(path);
@@ -93,7 +91,6 @@
         //console.log(yosysJson_);
         //console.log(rootNodeBuilder_);
         if (typeof d.children === "undefined" && typeof d._children === "undefined") {
-            //Todo: duplicit (port?) id detected when clicking on the first level of moduleWithHierarchicalOutput6
             let expandedNode = d3.HwSchematic.yosysLoadNodeByPath(yosysJson_, rootNode, path, rootNodeBuilder_);
             if (expandedNode === null) {
                 return;
@@ -117,7 +114,7 @@
 
 
 
-            d3.HwSchematic._checkIdDuplicities(d, false);
+            d3.HwSchematic._checkIdDuplicities(expandedNode, false);
             //console.log(JSON.stringify(rootNode, null, 2));
             d3.HwSchematic._checkMaxId(expandedNode);
             if ((typeof d.children !== "undefined" && d.children.length === 0) && (typeof d.edges !== "undefined" && d.edges.length === 0)) {
@@ -164,7 +161,7 @@
         hwSchematic.root.attr("transform", ev.transform)
     });
 
-    // disable zoom on doubleclick
+    // disable zoom on double click
     // because it interferes with component expanding/collapsing
     svg.call(zoom)
         .on("dblclick.zoom", null)
@@ -211,7 +208,8 @@
     // data loading script
     function fromYosys(yosysJson) {
         let [rootNode, rootNodeBuilder] = d3.HwSchematic.fromYosys(yosysJson, 0, d3.HwSchematic.fromYosysPortSuffixesAreEqualIOSuffixIgnore);
-        //d3.HwSchematic.yosysLoadNodeByPath(yosysJson, rootNode, ["aes"], rootNodeBuilder);
+        //d3.HwSchematic.yosysLoadNodeByPath(yosysJson, rootNode, ["wireModule"], rootNodeBuilder);
+        //d3.HwSchematic.yosysLoadNodeByPath(yosysJson, rootNode, ["riscv_top"], rootNodeBuilder);
         //d3.HwSchematic.yosysLoadNodeByPath(yosysJson, rootNode, ["riscv_top", "u_core"], rootNodeBuilder);
         //d3.HwSchematic.yosysLoadNodeByPath(yosysJson, rootNode, ["riscv_top", "u_core", "u_lsu"], rootNodeBuilder);
         //d3.HwSchematic.yosysLoadNodeByPath(yosysJson, rootNode, ["moduleWithHierarchicalOutput0", "b"], rootNodeBuilder);

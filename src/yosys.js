@@ -2,12 +2,23 @@ import {
     getTopModule,
 } from "./yosysUtills.js";
 import {IdCounter, LNodeBuilder} from "./yosysLNodeBuilder.js"
-import {collectPortIdToParentObjDict, setPortHierarchy} from "./yosysPortHierarchy.js";
+import {collectPortIdToParentObjDict, discoverPortHierarchy} from "./yosysPortHierarchy.js";
 import {aggregateHierarchicalPortEdges} from "./yosysHierarchicalPortEdges.js";
 
 export function fromYosys(yosysJson, hierarchyLevelLimit, portSuffixesAreEqual) {
-    //TODO: fix state.edges is undefined when clicking
-    //TODO: risv_top lsu right parent is undefined
+    //TODO: when choosing the same node repeatedly from Root path, ports are possibly duplicated
+    //TODO: Root path: add inteliscence from yosys json
+    //TODO: blackboxes tests variants:
+    //      blackbox to blackbox
+    //      blackbox to sibling
+    //      blackbox to parent
+    //      edges have muliple targets(one target is a blackbox)
+    //TODO: mouse wheel click on a node(select the root)
+    //TODO: thicker edges
+    //TODO: show portname when mouse is hovered above it
+    //TODO: port graphics: port hierarchy
+    //TODO: double edge bug (riscv_top u_icache)
+
     let nodePortNames = {}; // :see: :class:`~.LNodeBuilder`
     let idCounter = new IdCounter();
     let rootNodeBuilder = new LNodeBuilder("root", null, idCounter, null,
@@ -31,7 +42,7 @@ export function fromYosys(yosysJson, hierarchyLevelLimit, portSuffixesAreEqual) 
         undefined, false);
     // because mainComponentNode node is never treated as a child on which the aggregation is executed
 
-    setPortHierarchy(mainNodeBuilder, mainComponentNode, mainNodeBuilder.nodePortNames[mainComponentNode.id]);
+    discoverPortHierarchy(mainNodeBuilder, mainComponentNode, mainNodeBuilder.nodePortNames[mainComponentNode.id]);
     for (const p of mainComponentNode.ports) {
         collectPortIdToParentObjDict(mainComponentNode, p, mainNodeBuilder.portIdToParentDict);
     }

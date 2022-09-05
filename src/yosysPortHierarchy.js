@@ -192,8 +192,7 @@ function createPortHierarchy(nodeBuilder, node, portsAggregatedByPrefix, newPort
     }
 }
 
-// todo rename to discoverPortHierarchy
-export function setPortHierarchy(nodeBuilder, node, portByName) {
+export function discoverPortHierarchy(nodeBuilder, node, portByName) {
     if (node.ports.length > 1) {
         let portsAggregatedByPrefix = getPortStartNameToPorts(node.ports);
         let newPortList = [];

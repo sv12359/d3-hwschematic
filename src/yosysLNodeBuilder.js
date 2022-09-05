@@ -11,7 +11,7 @@ import {
 } from "./yosysUtills.js";
 
 import {aggregateConcatsAndSlices} from "./yosysConcatAndSplitAggregation.js";
-import {collectPortIdToParentObjDict, setPortHierarchy} from "./yosysPortHierarchy.js";
+import {collectPortIdToParentObjDict, discoverPortHierarchy} from "./yosysPortHierarchy.js";
 import {aggregateHierarchicalPortEdges} from "./yosysHierarchicalPortEdges.js";
 import {yosysTranslateIcon} from "./yosysIcons.js";
 
@@ -101,7 +101,7 @@ export class LNodeBuilder {
                 orderClkAndRstPorts(child);
             }
             if (!isOperator) {
-                setPortHierarchy(this, child, this.nodePortNames[child.id]);
+                discoverPortHierarchy(this, child, this.nodePortNames[child.id]);
             }
 
             for (const p of child.ports) {
