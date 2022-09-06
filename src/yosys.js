@@ -6,7 +6,8 @@ import {collectPortIdToParentObjDict, discoverPortHierarchy} from "./yosysPortHi
 import {aggregateHierarchicalPortEdges} from "./yosysHierarchicalPortEdges.js";
 
 export function fromYosys(yosysJson, hierarchyLevelLimit, portSuffixesAreEqual) {
-    //TODO: when choosing the same node repeatedly from Root path, ports are possibly duplicated
+    //TODO: when choosing the same node repeatedly from Root path, ports are possibly duplicated, also happens when chosing
+    //        any other node
     //TODO: Root path: add inteliscence from yosys json
     //TODO: blackboxes tests variants:
     //      blackbox to blackbox
@@ -33,7 +34,7 @@ export function fromYosys(yosysJson, hierarchyLevelLimit, portSuffixesAreEqual) 
         topModuleObj,
         idCounter,
         yosysJson.modules,
-        rootNodeBuilder.hierarchyLevel+1,
+        rootNodeBuilder.hierarchyLevel + 1,
         nodePortNames,
         portSuffixesAreEqual,
         rootNodeBuilder.nodeIdToBuilder,

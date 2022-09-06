@@ -39,6 +39,7 @@
 
 <svg id="scheme-placeholder"></svg>
 <script>
+    let hierarchyLevelLimit = 0;
     // schematic rendering script
     function viewport() {
         let e = window,
@@ -207,7 +208,7 @@
 
     // data loading script
     function fromYosys(yosysJson) {
-        let [rootNode, rootNodeBuilder] = d3.HwSchematic.fromYosys(yosysJson, 0, d3.HwSchematic.fromYosysPortSuffixesAreEqualIOSuffixIgnore);
+        let [rootNode, rootNodeBuilder] = d3.HwSchematic.fromYosys(yosysJson, hierarchyLevelLimit, d3.HwSchematic.fromYosysPortSuffixesAreEqualIOSuffixIgnore);
         //d3.HwSchematic.yosysLoadNodeByPath(yosysJson, rootNode, ["wireModule"], rootNodeBuilder);
         //d3.HwSchematic.yosysLoadNodeByPath(yosysJson, rootNode, ["riscv_top"], rootNodeBuilder);
         //d3.HwSchematic.yosysLoadNodeByPath(yosysJson, rootNode, ["riscv_top", "u_core"], rootNodeBuilder);
@@ -227,7 +228,6 @@
         yosysJson_ = yosysJson;
         rootNodeBuilder_ = rootNodeBuilder;
         rootNode_ = rootNode;
-
         //console.log("Path to ID: " + findPathToId(rootNode, 0));
         return rootNode;
     }
@@ -338,10 +338,9 @@
             child = rootInputPaths.lastElementChild;
         }
 
-        let allPaths = []
-        if (rootGraph.children.length > 0) {
-            getAllPaths(rootGraph.children[0], "/", allPaths);
-        }
+        let allPaths = [];
+        getAllPaths(yosysJson_, allPaths);
+
         setRootInputPathsOptions(allPaths, rootInputPaths);
     }
 
@@ -392,17 +391,24 @@
         return searchParams.get(name);
     }
 
-    function getAllPaths(node, prefix, allPaths) {
-        let children = node.children || node._children;
-        if (children && children.length) {
-            let nodePath = node.hwMeta.name;
-            prefix += nodePath;
-            allPaths.push(prefix);
+    function getAllPathsRec(yosysModules, moduleObj, currentPath, allPaths) {
+        if (!moduleObj) {
+            return;
+        }
+        allPaths.push(currentPath);
 
-            for (let child of children) {
-                getAllPaths(child, prefix + "/", allPaths);
+        for (const [cellName, cellObj] of Object.entries(moduleObj.cells)) {
+            let newModuleObj = yosysModules[cellObj.type];
+            if (newModuleObj && Object.entries(newModuleObj.cells).length !== 0) {
+                getAllPathsRec(yosysModules, newModuleObj, currentPath + "/" + cellName, allPaths);
             }
         }
+    }
+
+    //loads intellisense
+    function getAllPaths(yosysJson, allPaths) {
+        let [topModuleName, topModuleObj] = d3.HwSchematic._getTopModule(yosysJson);
+        getAllPathsRec(yosysJson.modules, topModuleObj,  "/" + topModuleName, allPaths);
     }
 
     function setUrlParameterByName(name, value, url) {

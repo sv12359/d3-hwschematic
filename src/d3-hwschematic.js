@@ -15,7 +15,7 @@ import {
 import {default as d3elk} from "./elk/elk-d3";
 import {selectGraphRootByPath} from "./hierarchySelection.js";
 import {checkMaxId, checkIdDuplicities} from "../tests/objectIdTestFunctions.js";
-import {elkGetModuleByPath, yosysGetModuleByPath} from "./yosysUtills.js";
+import {elkGetModuleByPath, getTopModule, yosysGetModuleByPath} from "./yosysUtills.js";
 
 
 function getNameOfEdge(e) {
@@ -350,6 +350,10 @@ export default class HwSchematic {
 
     static _flattenLNodePorts(node) {
         return flattenLNodePorts(node);
+    }
+
+    static _getTopModule(yosysJson) {
+        return getTopModule(yosysJson);
     }
 
     /**
