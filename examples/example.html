@@ -84,6 +84,24 @@
 
         return [path.reverse(), node];
     }
+
+    function printJsonWithCycle(node) {
+
+        let seen = [];
+        console.log(JSON.stringify(node, function (key, val) {
+            if (key === "nodeRenderers" || key === "renderer") {
+                return;
+            }
+            if (val != null && typeof val == "object") {
+                if (seen.indexOf(val) >= 0) {
+                    return "[string cycle]";
+                }
+                seen.push(val);
+            }
+            return val;
+        }, 2));
+
+    }
     hwSchematic.onNodeClick(function (ev, d) {
         let [path, rootNode] = getPathToNodeAndRootNode(d);
         //let rootNodeBuilder = rootNode.nodeIdToBuilder[rootNode.id];
@@ -97,21 +115,7 @@
                 return;
             }
 
-            /*
-            let seen = [];
-            console.log(JSON.stringify(expandedNode, function(key, val) {
-                if (key === "nodeRenderers" || key === "renderer") {
-                    return;
-                }
-                if (val != null && typeof val == "object") {
-                    if (seen.indexOf(val) >= 0) {
-                        return "[string cycle]";
-                    }
-                    seen.push(val);
-                }
-                return val;
-            }, 2));
-             */
+            //printJsonWithCycle(expandedNode);
 
 
 
@@ -340,7 +344,6 @@
 
         let allPaths = [];
         getAllPaths(yosysJson_, allPaths);
-
         setRootInputPathsOptions(allPaths, rootInputPaths);
     }
 
@@ -437,7 +440,7 @@
                     }
                     rootGraph = graph;
                     if (schematicRoot !== null) {
-                        graph = d3.HwSchematic.selectGraphRootByPath(graph, schematicRoot);
+                        graph = d3.HwSchematic.selectGraphRootByPath(graph, schematicRoot, hierarchyLevelLimit);
                     }
                     displayContents(graph);
                 } catch (e) {

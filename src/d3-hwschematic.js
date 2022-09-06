@@ -13,7 +13,7 @@ import {
     getNet, initNodeParents, flattenLNodePorts
 } from "./dataPrepare";
 import {default as d3elk} from "./elk/elk-d3";
-import {selectGraphRootByPath} from "./hierarchySelection.js";
+import {selectGraphRootByPathHierarchyLevelLimitUndef} from "./hierarchySelection.js";
 import {checkMaxId, checkIdDuplicities} from "../tests/objectIdTestFunctions.js";
 import {elkGetModuleByPath, getTopModule, yosysGetModuleByPath} from "./yosysUtills.js";
 
@@ -139,9 +139,14 @@ export default class HwSchematic {
         if (!graph.properties[postCompaction]) {
             graph.properties[postCompaction] = "EDGE_LENGTH";
         }
-        graph.hwMeta.maxId =  hyperEdgesToEdges(graph, graph.hwMeta.maxId) + 1;
-        initNodeParents(graph, null);
-        flattenLNodePorts(graph);
+        let children = graph.children || graph._children || [];
+        if (!children[0].parent) {
+            // if this function is called for the first time on this graph, normalisations are run
+            graph.hwMeta.maxId =  hyperEdgesToEdges(graph, graph.hwMeta.maxId) + 1;
+            initNodeParents(graph, null);
+            flattenLNodePorts(graph);
+        }
+
 
         if (this._PERF) {
             let t0 = new Date().getTime();
@@ -160,8 +165,11 @@ export default class HwSchematic {
     /*
     * @returns subnode selected by path wrapped in a new root
     * */
-    static selectGraphRootByPath(graph, path) {
-        return selectGraphRootByPath(graph, path);
+    static selectGraphRootByPath(graph, path, hierarchyLevelLimit) {
+        if (typeof hierarchyLevelLimit === "undefined") {
+            return selectGraphRootByPathHierarchyLevelLimitUndef(graph, path);
+        }
+
     }
 
     /*

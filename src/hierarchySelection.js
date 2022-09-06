@@ -8,7 +8,7 @@ function findGraph(nodeArray, nodeName) {
     throw new Error("Node is not found: " + nodeName);
 }
 
-export function selectGraphRootByPath(graph, path) {
+export function selectGraphRootByPathHierarchyLevelLimitUndef(graph, path) {
     let pathArray = path.split("/");
     let first = true;
     let newGraph = graph;
